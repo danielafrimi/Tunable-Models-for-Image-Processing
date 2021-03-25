@@ -16,7 +16,6 @@ class Trainer:
         self.lr = lr
         self.batch_size = batch_size
 
-
     def train(self, num_epochs=50, plot_net_error=False):
         """
         Train the model on the data in the data loader and save the weights of the model

@@ -2,11 +2,11 @@ import argparse
 import os
 import shutil
 
-from Train import Trainer
-
+import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torchvision.datasets import CIFAR10
-import torchvision.transforms as transforms
+
+from Train import Trainer
 
 
 def parse_args():
@@ -34,8 +34,8 @@ if __name__ == '__main__':
         shutil.rmtree(args.log_dir)
 
     transform = transforms.Compose(
-                [transforms.ToTensor(),
-                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+        [transforms.ToTensor(),
+         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
     # Train the model on MNIST data set
     trainset = CIFAR10(root='./data', train=True, download=True, transform=transform)
