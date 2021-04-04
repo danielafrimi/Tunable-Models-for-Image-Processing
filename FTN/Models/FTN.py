@@ -20,20 +20,14 @@ class FTN(nn.Module):
         super(FTN, self).__init__()
 
         # todo both kernels needs to be grouped
-        self.conv1 = nn.Conv2d(in_nc, out_nc, kernel_size=(1, 1), groups=group_blocks)
+        self.conv1 = nn.Conv2d(in_nc, out_nc, kernel_size=(1, 1), groups=20)
 
         # PReLU(x)=max(0,x)+a∗min(0,x), init alpha with 1 (alpha is learnable)
         self.pReLu = nn.PReLU(init=1)
         # TODO needs identity init
-        self.conv2 = nn.Conv2d(in_nc, out_nc, kernel_size=(1, 1), groups=group_blocks)
+        self.conv2 = nn.Conv2d(in_nc, out_nc, kernel_size=(1, 1), groups=in_nc)
 
     def forward(self, x):
-        """
-
-        :param x: input - needs to be the filter itself
-        :return:
-        """
-
         # x is the filter - the shape is torch.Size([64, 3, 3, 3])
         identity = x
         x = self.conv1(x)
@@ -49,9 +43,10 @@ class FTNBlock(nn.Module):
         super(FTNBlock, self).__init__()
         self.alpha = alpha
 
-        self.FTN_layer = FTN(in_nc=in_nc, out_nc=out_nc, group_blocks=2)
+        # The FTN layer get kernel as input and produce a tensor of the same size
+        self.FTN_layer = FTN(in_nc=in_nc, out_nc=in_nc, group_blocks=3)
         # todo check sizes
-        self.conv = nn.Conv2d(out_nc, out_nc, kernel_size=(3, 3))
+        self.conv = nn.Conv2d(in_nc, out_nc, kernel_size=(3, 3))
 
     def forward(self, x):
         print(x.shape)

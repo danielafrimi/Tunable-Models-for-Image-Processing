@@ -10,8 +10,8 @@ from FTN.Models.SimpleModel import SimpleModel
 class Trainer:
 
     def __init__(self, train_loader, noise_std, log_dir, lr, batch_size=16, ):
-        # self.residual_net = DenoisingModel()
-        self.simple_net = SimpleModel()
+        self.residual_net = DenoisingModel()
+        # self.simple_net = SimpleModel()
         self.train_loader = train_loader
 
         # std of a guassian for noising the images
@@ -39,7 +39,7 @@ class Trainer:
         print("Start Training with lr={}, batch_size={}".format(self.lr, self.batch_size))
 
         # Define the Optimizer and the loss function for the model
-        optimizer = torch.optim.Adam(self.simple_net.parameters(), lr=self.lr, betas=(0.9, 0.999))
+        optimizer = torch.optim.Adam(self.residual_net.parameters(), lr=self.lr, betas=(0.9, 0.999))
         criterion = nn.L1Loss()
 
         net_loss_per_batch = list()
@@ -57,7 +57,7 @@ class Trainer:
                 optimizer.zero_grad()
 
                 # forward + backward + optimize
-                outputs = self.simple_net(noisy_images)
+                outputs = self.residual_net(noisy_images)
                 print(outputs.shape)
 
                 # Calculating loss

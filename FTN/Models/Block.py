@@ -10,14 +10,14 @@ class ShortcutBlock(nn.Module):
         self.sub = submodule
 
     def forward(self, x):
-        output = x + self.sub(x)
-        return output
+        return x + self.sub(x)
 
     def __repr__(self):
         tmpstr = 'Identity + \n|'
         modstr = self.sub.__repr__().replace('\n', '\n|')
         tmpstr = tmpstr + modstr
         return tmpstr
+
 
 def get_norm_layer(norm_type):
     # helper selecting normalization layer
@@ -27,6 +27,8 @@ def get_norm_layer(norm_type):
         layer = functools.partial(nn.InstanceNorm2d, affine=False, track_running_stats=False)
     elif norm_type == 'basic':
         layer = functools.partial(Basic)
+    elif norm_type == 'adafm':
+        layer = functools.partial(AdaptiveFM, kernel_size=1)
     else:
         raise NotImplementedError('normalization layer [{:s}] is not found'.format(norm_type))
     return layer
@@ -54,7 +56,7 @@ def get_valid_padding(kernel_size, dilation):
 
 
 def sequential(*args):
-    # Flatten Sequential. It unwraps nn.Sequential.
+    # Flatten Sequential it unwraps nn.Sequential.
     if len(args) == 1:
         if isinstance(args[0], OrderedDict):
             raise NotImplementedError('sequential does not support OrderedDict input.')
@@ -69,22 +71,22 @@ def sequential(*args):
     return nn.Sequential(*modules)
 
 
-def conv_block(in_nc, out_nc, kernel_size, stride=1, dilation=1, groups=1, bias=True, pad_type='zero', norm_layer=None,
-               act_type='relu'):
+def conv_block(in_nc, out_nc, kernel_size, stride=1, groups=1, pad_type='zero', norm_layer=None, act_type='relu'):
     '''
     Conv layer with padding, normalization, activation
     '''
-    padding = get_valid_padding(kernel_size, dilation)
+
+    padding = get_valid_padding(kernel_size, dilation=1)
     p = pad(pad_type, padding) if pad_type and pad_type != 'zero' else None
     padding = padding if pad_type == 'zero' else 0
 
-    conv_layer = nn.Conv2d(in_nc, out_nc, kernel_size=kernel_size, stride=stride, padding=padding, dilation=dilation,
-                           bias=bias,
+    conv_layer = nn.Conv2d(in_nc, out_nc, kernel_size=kernel_size, stride=stride, padding=padding,bias=True,
                            groups=groups)
 
     # TODO For be more generic we can use a function to peak to activation map
     activation_function = nn.ReLU(inplace=True) if act_type else None
 
+    # todo change it here?
     norm_layer = norm_layer(out_nc) if norm_layer else None
 
     # Like in the paper, first conv, AdaFM, Relu
@@ -96,8 +98,7 @@ def upconv_blcok(in_nc, out_nc, upscale_factor=2, kernel_size=3, stride=1, bias=
     # Up conv
     # described in https://distill.pub/2016/deconv-checkerboard/
     upsample = nn.Upsample(scale_factor=upscale_factor, mode=mode)
-    conv = conv_block(in_nc, out_nc, kernel_size, stride, bias=bias, \
-                      pad_type=pad_type, norm_layer=norm_layer, act_type=act_type)
+    conv = conv_block(in_nc, out_nc, kernel_size, stride, bias=bias, pad_type=pad_type, norm_layer=norm_layer, act_type=act_type)
     return sequential(upsample, conv)
 
 
@@ -111,11 +112,11 @@ class ResNetBlock(nn.Module):
         super(ResNetBlock, self).__init__()
 
         # The resnet block consist of 2 conv layers with relu (with skip connection at the end)
-        conv0 = conv_block(input_number_channels, middle_number_channels, kernel_size, stride, dilation, groups, bias,
-                           pad_type, norm_layer, act_type)
-
         # TODO Instead of norm type to be basic, we want do change it to ftn layer?
-        conv1 = conv_block(middle_number_channels, output_number_channels, kernel_size, stride, dilation, groups, bias,
+        conv0 = conv_block(input_number_channels, middle_number_channels, kernel_size, stride, groups,
+                           pad_type, norm_layer)
+
+        conv1 = conv_block(middle_number_channels, output_number_channels, kernel_size, stride, groups,
                            pad_type, norm_layer, act_type=None)
 
         self.res = sequential(conv0, conv1)
@@ -134,3 +135,26 @@ class Basic(nn.Module):
 
     def forward(self, x):
         return x
+
+
+####################
+# AdaFM
+####################
+
+class AdaptiveFM(nn.Module):
+
+    def __init__(self, in_channel, kernel_size):
+        super(AdaptiveFM, self).__init__()
+        padding = get_valid_padding(kernel_size, 1)
+        # Kernel size is 1X1 equal to scaling and shifting
+        # 'Group' is like depth wise conv - operates on each channel separately
+        self.transformer = nn.Conv2d(in_channel, in_channel, kernel_size, padding=padding, groups=in_channel)
+
+    def forward(self, x):
+        # During the modulation testing, the interpolation is performed between the identity filter and the leaned AdaFM filter.
+        # If there is a residual structure, you don't have to look for a 1x1, 3x3 or 5x5 identity filter but just interpolate the parameters of self.transformer.
+
+        # y = AdaFM(x) = transformer(x) + x = g(x) = g'(x) + x = (1+g') * x (mechane mesutaf)
+        # fmid = f15 + lamda * g' * f15 = f15 + lamda * (g-1) * x
+
+        return self.transformer(x) + x
