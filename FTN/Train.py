@@ -5,16 +5,16 @@ from torchvision.utils import make_grid, save_image
 
 from FTN.Models.ResidualModel import DenoisingModel
 from FTN.Models.SimpleModel import SimpleModel
-
+from torch.optim.lr_scheduler import StepLR
 
 class Trainer:
 
     def __init__(self, train_loader, noise_std, log_dir, lr, batch_size=16, ):
-        self.residual_net = DenoisingModel()
-        # self.simple_net = SimpleModel()
+        self.net = DenoisingModel()
+        # self.net = SimpleModel()
         self.train_loader = train_loader
 
-        # std of a guassian for noising the images
+        # std of a Gaussian for noising the images
         self.noise_std = noise_std
 
         # run tensorboard --logdir=runs on terminal
@@ -39,8 +39,9 @@ class Trainer:
         print("Start Training with lr={}, batch_size={}".format(self.lr, self.batch_size))
 
         # Define the Optimizer and the loss function for the model
-        optimizer = torch.optim.Adam(self.residual_net.parameters(), lr=self.lr, betas=(0.9, 0.999))
+        optimizer = torch.optim.Adam(self.net.parameters(), lr=self.lr, betas=(0.9, 0.999))
         criterion = nn.L1Loss()
+        # scheduler = StepLR(optimizer, step_size=15, gamma=0.1)
 
         net_loss_per_batch = list()
 
@@ -57,13 +58,15 @@ class Trainer:
                 optimizer.zero_grad()
 
                 # forward + backward + optimize
-                outputs = self.residual_net(noisy_images)
+                outputs = self.net(noisy_images)
                 print(outputs.shape)
 
                 # Calculating loss
                 loss = criterion(outputs, images)
                 loss.backward()
+
                 optimizer.step()
+                # scheduler.step()
 
                 # Visualize
                 self.writer.add_image('denoising_images', make_grid(outputs / 2 + 0.5), i)
@@ -72,6 +75,8 @@ class Trainer:
 
                 # print statistics
                 running_loss += loss.item()
+                # print("this is the lr {}".format(scheduler.get_last_lr()))
+
                 if i % self.batch_size == self.batch_size - 1:
                     # Save images
                     save_image(make_grid(images), fp="images.jpeg")
@@ -87,4 +92,4 @@ class Trainer:
         print('Finished Training')
 
         # Save the weights of the trained model
-        self.residual_net.save('./denoising_model_std_0.2.ckpt')
+        self.net.save('./denoising_model_std_0.2.ckpt')

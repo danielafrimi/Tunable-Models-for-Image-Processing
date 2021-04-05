@@ -42,6 +42,8 @@ class FTNBlock(nn.Module):
 
         super(FTNBlock, self).__init__()
         self.alpha = alpha
+        self.input_channels = in_nc
+        self.output_channels = out_nc
 
         # The FTN layer get kernel as input and produce a tensor of the same size
         self.FTN_layer = FTN(in_nc=in_nc, out_nc=in_nc, group_blocks=3)

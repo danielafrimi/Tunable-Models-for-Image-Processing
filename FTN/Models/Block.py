@@ -98,7 +98,7 @@ def upconv_blcok(in_nc, out_nc, upscale_factor=2, kernel_size=3, stride=1, bias=
     # Up conv
     # described in https://distill.pub/2016/deconv-checkerboard/
     upsample = nn.Upsample(scale_factor=upscale_factor, mode=mode)
-    conv = conv_block(in_nc, out_nc, kernel_size, stride, bias=bias, pad_type=pad_type, norm_layer=norm_layer, act_type=act_type)
+    conv = conv_block(in_nc, out_nc, kernel_size, stride, pad_type=pad_type, norm_layer=norm_layer, act_type=act_type)
     return sequential(upsample, conv)
 
 

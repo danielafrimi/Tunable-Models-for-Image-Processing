@@ -14,7 +14,7 @@ class SimpleModel(nn.Module):
         :param filters_number:
         :param blocks_number: number of the residual blocks
         :param norm_type:
-        :param activaion_function_type: activation funcion type
+        :param activaion_function_type: activation function type
         :param res_scale:
         :param upsample_mode:
         """
@@ -22,7 +22,6 @@ class SimpleModel(nn.Module):
 
         self.device = torch.device('cuda' if torch.cuda.is_available() is not None else 'cpu')
 
-        # todo maybe add group to the conv2d,
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=60, kernel_size=3, padding=1, padding_mode='zeros')
 
         self.ftn1 = FTN.FTNBlock(alpha=0, in_nc=60, out_nc=60)
@@ -37,10 +36,17 @@ class SimpleModel(nn.Module):
         self.bn3 = nn.BatchNorm2d(64)
 
     def forward(self, x):
-        # todo check
-        conv_layer = self.ftn1(self.conv1.weight)
+        # todo check - maybe
+        conv_layer_parameters = self.ftn1(self.conv1.weight)
 
-        x = conv_layer(x)
+        # We dont want to learn this layer, only use it on the input feature map
+        generated_conv = nn.Conv2d(self.input_channels, self.output_channels, kernel_size=(3, 3)).requires_grad_(False)
+
+        # Load parameters into the layer
+        generated_conv.weight = nn.Parameter(conv_layer_parameters)
+        # generated_conv1.bias = nn.Parameter(initial_param['bias'])
+        x = generated_conv(x)
+
         x = F.relu(self.bn2(self.conv2(x)))
         x = F.relu(self.bn3(self.conv3(x)))
         x = F.relu(self.conv4(x))
