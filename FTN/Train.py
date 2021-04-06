@@ -53,13 +53,12 @@ class Trainer:
             for i, data in enumerate(self.train_loader, 0):
                 # todo normalize the data?
                 images, noisy_images = data
-
+                print("this is images shape:", images.shape)
                 # zero the parameter gradients
                 optimizer.zero_grad()
 
                 # forward + backward + optimize
                 outputs = self.net(noisy_images)
-                print(outputs.shape)
 
                 # Calculating loss
                 loss = criterion(outputs, images)

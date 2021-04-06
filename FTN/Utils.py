@@ -17,7 +17,6 @@ def imshow(img, is_grid=True):
     plt.imshow(np.transpose(numpy_images, (2, 1, 0)))
     plt.show()
 
-
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
@@ -84,3 +83,4 @@ def modcrop(img_in, scale):
     else:
         raise ValueError('Wrong img ndim: [{:d}].'.format(img.ndim))
     return img
+

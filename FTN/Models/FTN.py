@@ -50,16 +50,15 @@ class FTNBlock(nn.Module):
         # The FTN layer get kernel as input and produce a tensor of the same size
         self.FTN_layer = FTN(in_nc=in_nc, out_nc=in_nc, group_blocks=3)
         # todo check sizes
-        self.conv = nn.Conv2d(in_nc, out_nc, kernel_size=(3, 3))
+        self.conv = nn.Conv2d(in_nc, in_nc, kernel_size=(1, 1))
 
     def forward(self, x):
         # x shape is torch.Size([60, 3, 3, 3]) -> 60 channels as output, 3 channels as input, and filter size of 3,3
         input_filter = x
         y = self.FTN_layer(x)
-        print("y", y.shape)
+        # y shape is torch.Size([60, 3, 3, 3]) same as x
         y = self.conv(y)
 
-        # todo the output is new filter and we need to conv with this?
         return (input_filter * (1 - self.alpha)) + (y * self.alpha)
 
 
