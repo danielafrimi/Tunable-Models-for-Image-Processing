@@ -10,8 +10,8 @@ from torch.optim.lr_scheduler import StepLR
 class Trainer:
 
     def __init__(self, train_loader, noise_std, log_dir, lr, batch_size=16, ):
-        self.net = DenoisingModel()
-        # self.net = SimpleModel()
+        # self.net = DenoisingModel()
+        self.net = SimpleModel()
         self.train_loader = train_loader
 
         # std of a Gaussian for noising the images

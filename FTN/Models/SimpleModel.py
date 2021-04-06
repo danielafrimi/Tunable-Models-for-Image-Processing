@@ -24,7 +24,7 @@ class SimpleModel(nn.Module):
 
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=60, kernel_size=3, padding=1, padding_mode='zeros')
 
-        self.ftn1 = FTN.FTNBlock(alpha=0, in_nc=60, out_nc=60)
+        self.ftn1 = FTN.FTNBlock(alpha=0, in_nc=3, out_nc=60)
 
         self.conv2 = nn.Conv2d(in_channels=60, out_channels=60, kernel_size=(3, 3), padding=1, groups=3, padding_mode='zeros')
         self.conv3 = nn.Conv2d(in_channels=60, out_channels=60, kernel_size=(3, 3), padding=1, groups=3, padding_mode='zeros')

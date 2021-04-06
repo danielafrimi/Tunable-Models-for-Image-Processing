@@ -20,12 +20,13 @@ class FTN(nn.Module):
         super(FTN, self).__init__()
 
         # todo both kernels needs to be grouped
-        self.conv1 = nn.Conv2d(in_nc, out_nc, kernel_size=(1, 1), groups=20)
+        # todo for now we keep the group to be 1
+        self.conv1 = nn.Conv2d(in_nc, out_nc, kernel_size=(1, 1), groups=group_blocks)
 
         # PReLU(x)=max(0,x)+a∗min(0,x), init alpha with 1 (alpha is learnable)
         self.pReLu = nn.PReLU(init=1)
-        # TODO needs identity init
-        self.conv2 = nn.Conv2d(in_nc, out_nc, kernel_size=(1, 1), groups=in_nc)
+        # TODO needs identity init? or is sufficent to return x in the forward?
+        self.conv2 = nn.Conv2d(out_nc, in_nc, kernel_size=(1, 1), groups=group_blocks)
 
     def forward(self, x):
         # x is the filter - the shape is torch.Size([64, 3, 3, 3])
@@ -34,6 +35,7 @@ class FTN(nn.Module):
         x = self.pReLu(x)
         x = self.conv2(x)
         # todo needs to be skip connection with weighted sum - what does it mean with weights sum?
+
         return x + identity
 
 
@@ -51,14 +53,14 @@ class FTNBlock(nn.Module):
         self.conv = nn.Conv2d(in_nc, out_nc, kernel_size=(3, 3))
 
     def forward(self, x):
-        print(x.shape)
+        # x shape is torch.Size([60, 3, 3, 3]) -> 60 channels as output, 3 channels as input, and filter size of 3,3
+        input_filter = x
         y = self.FTN_layer(x)
         print("y", y.shape)
         y = self.conv(y)
-        y = y * self.alpha
 
         # todo the output is new filter and we need to conv with this?
-        return (x * (1 - self.alpha)) + y
+        return (input_filter * (1 - self.alpha)) + (y * self.alpha)
 
 
 # train the main convolutional filter for the initial level with α = 0. Then, we freeze the main network and train
