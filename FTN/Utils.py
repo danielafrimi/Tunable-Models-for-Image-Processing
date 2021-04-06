@@ -55,7 +55,7 @@ def read_img(path):
 
 
 def augment(img_list, hflip=True, rot=True):
-    # horizontal flip OR rotate
+    # Horizontal flip OR rotate
     hflip = hflip and random.random() < 0.5
     vflip = rot and random.random() < 0.5
     rot90 = rot and random.random() < 0.5

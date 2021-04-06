@@ -7,7 +7,8 @@ from FTN.Models import FTN
 def get_conv_layer_with_updated_weights(conv_layer_parameters, input_channels, output_channels):
 
     # We dont want to learn this layer, we only use it on the input feature map
-    generated_conv = nn.Conv2d(input_channels, output_channels, kernel_size=(3, 3)).requires_grad_(False)
+    generated_conv = nn.Conv2d(input_channels, output_channels, kernel_size=(3, 3), padding=1, padding_mode='zeros')\
+        .requires_grad_(False)
     # Load parameters into the layer
     generated_conv.weight = nn.Parameter(conv_layer_parameters)
     # todo what do we need to do with the bias?
@@ -40,10 +41,10 @@ class SimpleModel(nn.Module):
 
         self.ftn1 = FTN.FTNBlock(alpha=0, in_nc=3, out_nc=60)
 
-        self.conv2 = nn.Conv2d(in_channels=60, out_channels=60, kernel_size=(3, 3), padding=1, groups=3, padding_mode='zeros')
-        self.conv3 = nn.Conv2d(in_channels=60, out_channels=60, kernel_size=(3, 3), padding=1, groups=3, padding_mode='zeros')
-        self.conv4 = nn.Conv2d(in_channels=60, out_channels=60, kernel_size=(3, 3), padding=1, groups=3, padding_mode='zeros')
-        self.conv5 = nn.Conv2d(in_channels=60, out_channels=3, kernel_size=(3, 3), padding=1, groups=1, padding_mode='zeros')
+        self.conv2 = nn.Conv2d(in_channels=60, out_channels=60, kernel_size=(3, 3), padding=1, padding_mode='zeros')
+        self.conv3 = nn.Conv2d(in_channels=60, out_channels=60, kernel_size=(3, 3), padding=1, padding_mode='zeros')
+        self.conv4 = nn.Conv2d(in_channels=60, out_channels=60, kernel_size=(3, 3), padding=1, padding_mode='zeros')
+        self.conv5 = nn.Conv2d(in_channels=60, out_channels=3, kernel_size=(3, 3), padding=1,  padding_mode='zeros')
 
         self.bn1 = nn.BatchNorm2d(60)
         self.bn2 = nn.BatchNorm2d(60)
@@ -52,6 +53,8 @@ class SimpleModel(nn.Module):
     def forward(self, x):
         # todo The conv_layer_parameters is tensor of size torch.Size([60, 3, 3, 3])
         conv_layer_parameters = self.ftn1(self.conv1.weight)
+
+        # Creating a convolution layer for operating the previous feature map
         generated_conv = get_conv_layer_with_updated_weights(conv_layer_parameters,
                                                              self.input_number_channels, self.output_number_channels)
         x = F.relu(generated_conv(x))
@@ -61,7 +64,6 @@ class SimpleModel(nn.Module):
         x = F.relu(self.conv4(x))
 
         x = F.relu(self.conv5(x))
-        print("this is x shape", x.shape)
 
         return x
 

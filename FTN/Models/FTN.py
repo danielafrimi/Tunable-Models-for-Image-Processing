@@ -8,7 +8,7 @@ class FTN(nn.Module):
 
     def __init__(self, in_nc, out_nc, group_blocks):
         """
-        todo input size of the FTN is quite small (usually 3 × 3 × C) because we operate it on the filter itself
+
         :param alpha:
         :param in_nc:
         :param out_nc:
@@ -19,13 +19,11 @@ class FTN(nn.Module):
         """
         super(FTN, self).__init__()
 
-        # todo both kernels needs to be grouped
-        # todo for now we keep the group to be 1
+        # input size of the FTN is quite small (usually 3 × 3 × C) because we operate it on the filter itself
         self.conv1 = nn.Conv2d(in_nc, out_nc, kernel_size=(1, 1), groups=group_blocks)
 
         # PReLU(x)=max(0,x)+a∗min(0,x), init alpha with 1 (alpha is learnable)
         self.pReLu = nn.PReLU(init=1)
-        # TODO needs identity init? or is sufficent to return x in the forward?
         self.conv2 = nn.Conv2d(out_nc, in_nc, kernel_size=(1, 1), groups=group_blocks)
 
     def forward(self, x):
