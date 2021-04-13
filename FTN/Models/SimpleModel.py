@@ -73,3 +73,6 @@ class SimpleModel(nn.Module):
     def load(self, path):
         checkpoint = torch.load(path)
         self.load_state_dict(checkpoint['model_state_dict'])
+
+    def __repr__(self):
+        return 'Simple_Net'

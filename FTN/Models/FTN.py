@@ -31,7 +31,6 @@ class FTN(nn.Module):
         x = self.conv1(x)
         x = self.pReLu(x)
         x = self.conv2(x)
-        # todo needs to be skip connection with weighted sum - what does it mean with weights sum?
 
         return x + identity
 
@@ -41,16 +40,15 @@ class FTNBlock(nn.Module):
 
         super(FTNBlock, self).__init__()
         self.alpha = alpha
-        self.input_channels = in_nc
-        self.output_channels = out_nc
 
         # The FTN layer get kernel as input and produce a tensor of the same size
-        self.FTN_layer = FTN(in_nc=in_nc, out_nc=in_nc, group_blocks=3)
+        self.FTN_layer = FTN(in_nc=in_nc, out_nc=in_nc, group_blocks=64)
         # todo check sizes
         self.conv = nn.Conv2d(in_nc, in_nc, kernel_size=(1, 1))
 
     def forward(self, x):
         # x shape is torch.Size([60, 3, 3, 3]) -> 60 channels as output, 3 channels as input, and filter size of 3,3
+        # torch.Size([64, 64, 3, 3])
         input_filter = x
         y = self.FTN_layer(x)
         # y shape is torch.Size([60, 3, 3, 3]) same as x

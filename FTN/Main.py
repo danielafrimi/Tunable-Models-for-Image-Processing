@@ -42,5 +42,5 @@ if __name__ == '__main__':
     trainset = HRDataset(args.noise_std, dataroot=path_dataset)
     trainloader = DataLoader(trainset, batch_size=16, shuffle=True)
 
-    denoising_trainer = Trainer(trainloader, **args.__dict__, load=True)
+    denoising_trainer = Trainer(trainloader, **args.__dict__, load=False)
     denoising_trainer.train()

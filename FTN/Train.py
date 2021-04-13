@@ -5,9 +5,11 @@ from torchvision.utils import make_grid, save_image
 
 from Models.ResidualModel import DenoisingModel
 from Models.SimpleModel import SimpleModel
+from Models.FTN_Resnet import FTN_Resnet
 from Models.Resnet import Resnet
 from torch.optim.lr_scheduler import StepLR
 from Utils import calc_PSNR
+
 
 class Trainer:
 
@@ -15,9 +17,9 @@ class Trainer:
         # self.device = torch.device('cuda' if torch.cuda.is_available() is not None else 'cpu')
         # print(self.device)
 
-        # self.net = DenoisingModel()
         # self.net = SimpleModel()
-        self.net = Resnet()
+        # self.net = Resnet()
+        self.net = FTN_Resnet()
         if load:
             self.net.load('./denoising_model_std_0.2.ckpt')
 
@@ -69,6 +71,7 @@ class Trainer:
 
                 # forward + backward + optimize
                 outputs = self.net(noisy_images)
+                print("passed")
 
                 # Calculating loss
                 loss = criterion(outputs, images)
@@ -81,6 +84,7 @@ class Trainer:
                 self.writer.add_image('real_images', make_grid(images), i)
                 self.writer.add_image('noisy_images', make_grid(noisy_images), i)
 
+                # todo delete this
                 self.writer.add_scalar('psnr', calc_PSNR(images, outputs), i)
 
                 # print statistics

@@ -10,13 +10,16 @@ class Conv_BN_ReLU(nn.Module):
                 padding = (kernel_size - 1) // 2
             else:
                 padding = 0
+
         self.conv = nn.Conv2d(in_channels=in_channels, out_channels=out_channels,
                               kernel_size=kernel_size, stride=stride, padding=padding,
                               groups=groups, bias=bias)
+
         self.bn = nn.BatchNorm2d(out_channels)
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, x):
+        #shape is x torch.Size([16, 64, 96, 96])
         return self.relu(self.bn(self.conv(x)))
 
 
@@ -24,7 +27,6 @@ class Resnet(nn.Module):
     def __init__(self, input_channels=3):
         super(Resnet, self).__init__()
 
-        self.device = torch.device('cuda' if torch.cuda.is_available() is not None else 'cpu')
         self.conv1 = nn.Sequential(nn.Conv2d(in_channels=input_channels, out_channels=64,
                                              kernel_size=3, stride=1, padding=1), nn.ReLU(inplace=True))
         # todo change to bias True?
@@ -64,3 +66,6 @@ class Resnet(nn.Module):
     def load(self, path):
         checkpoint = torch.load(path)
         self.load_state_dict(checkpoint['model_state_dict'])
+
+    def __repr__(self):
+        return 'RESNET'
