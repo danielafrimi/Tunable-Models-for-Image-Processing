@@ -2,6 +2,17 @@ import torch.nn as nn
 import torch
 
 
+def get_conv_layer_with_updated_weights(conv_layer_parameters, input_channels, output_channels):
+    # We dont want to learn this layer, we only use it on the input feature map
+    generated_conv = nn.Conv2d(input_channels, output_channels, kernel_size=(3, 3), padding=1, padding_mode='zeros') \
+        .requires_grad_(False)
+    # Load parameters into the layer
+    generated_conv.weight = nn.Parameter(conv_layer_parameters)
+    # todo what do we need to do with the bias?
+    # generated_conv1.bias = nn.Parameter(initial_param['bias'])
+    return generated_conv
+
+
 class Conv_BN_ReLU(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=None, groups=1, bias=False):
         super(Conv_BN_ReLU, self).__init__()
@@ -13,11 +24,17 @@ class Conv_BN_ReLU(nn.Module):
         self.conv = nn.Conv2d(in_channels=in_channels, out_channels=out_channels,
                               kernel_size=kernel_size, stride=stride, padding=padding,
                               groups=groups, bias=bias)
+        # todo insert here the ftn layer!
         self.bn = nn.BatchNorm2d(out_channels)
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, x):
-        return self.relu(self.bn(self.conv(x)))
+        conv_layer_parameters = self.ftn1(self.conv1.weight)
+        # Creating a convolution layer for operating the previous feature map
+        generated_conv = get_conv_layer_with_updated_weights(conv_layer_parameters,
+                                                             self.input_number_channels, self.output_number_channels)
+        x = self.relu(self.bn(generated_conv(x)))
+        return x
 
 
 class Resnet(nn.Module):

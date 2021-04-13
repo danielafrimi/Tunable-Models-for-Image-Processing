@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import torch.utils.data as data
-import FTN.Utils as Utils
+import FTN.Data.Utils as Utils
 import random
 
 
@@ -12,7 +12,7 @@ class LRDataset(data.Dataset):
     """
 
     def __init__(self, noise_level,
-                 dataroot='/Users/danielafrimi/Desktop/University/Lab_Vision/FTN/dataset/DIV2K_train_HR'):
+                 dataroot='/Lab_Vision/FTN/dataset/DIV2K_train_HR'):
         super(LRDataset, self).__init__()
 
         self.paths_LR = None

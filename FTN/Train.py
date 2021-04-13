@@ -3,15 +3,24 @@ import torch.nn as nn
 from tensorboardX import SummaryWriter
 from torchvision.utils import make_grid, save_image
 
-from FTN.Models.ResidualModel import DenoisingModel
-from FTN.Models.SimpleModel import SimpleModel
+from Models.ResidualModel import DenoisingModel
+from Models.SimpleModel import SimpleModel
+from Models.Resnet import Resnet
 from torch.optim.lr_scheduler import StepLR
+from Utils import calc_PSNR
 
 class Trainer:
 
-    def __init__(self, train_loader, noise_std, log_dir, lr, batch_size=16, ):
+    def __init__(self, train_loader, noise_std, log_dir, lr, batch_size=16, load=True):
+        # self.device = torch.device('cuda' if torch.cuda.is_available() is not None else 'cpu')
+        # print(self.device)
+
         # self.net = DenoisingModel()
-        self.net = SimpleModel()
+        # self.net = SimpleModel()
+        self.net = Resnet()
+        if load:
+            self.net.load('./denoising_model_std_0.2.ckpt')
+
         self.train_loader = train_loader
 
         # std of a Gaussian for noising the images
@@ -20,7 +29,6 @@ class Trainer:
         # run tensorboard --logdir=runs on terminal
         self.writer = SummaryWriter(log_dir=log_dir)
 
-        # TODO change to lr_schedulers
         self.lr = lr
         self.batch_size = batch_size
 
@@ -31,7 +39,7 @@ class Trainer:
                 print(torch.cuda.get_device_name(i))
             self.residual_net = nn.DataParallel(self.residual_net)
 
-    def train(self, num_epochs=50):
+    def train(self, num_epochs=70):
         """
         Train the model on the data in the data loader and save the weights of the model
         :return: None
@@ -41,9 +49,10 @@ class Trainer:
         # Define the Optimizer and the loss function for the model
         optimizer = torch.optim.Adam(self.net.parameters(), lr=self.lr, betas=(0.9, 0.999))
         criterion = nn.L1Loss()
-        # scheduler = StepLR(optimizer, step_size=15, gamma=0.1)
 
         net_loss_per_batch = list()
+        # todo when using cuda
+        # self.net.to(self.device)
 
         # Train the model
         for epoch in range(num_epochs):
@@ -51,9 +60,10 @@ class Trainer:
             running_loss = 0.0
 
             for i, data in enumerate(self.train_loader, 0):
-                # todo normalize the data?
                 images, noisy_images = data
-                print("this is images shape:", images.shape)
+                #  todo when using cuda
+                # images, noisy_images = images.to(self.device), noisy_images.to(self.device)
+
                 # zero the parameter gradients
                 optimizer.zero_grad()
 
@@ -65,19 +75,30 @@ class Trainer:
                 loss.backward()
 
                 optimizer.step()
-                # scheduler.step()
 
                 # Visualize
-                self.writer.add_image('denoising_images', make_grid(outputs / 2 + 0.5), i)
-                self.writer.add_image('real_images', make_grid(images / 2 + 0.5), i)
-                self.writer.add_image('noisy_images', make_grid(noisy_images / 2 + 0.5), i)
+                self.writer.add_image('denoising_images', make_grid(outputs), i)
+                self.writer.add_image('real_images', make_grid(images), i)
+                self.writer.add_image('noisy_images', make_grid(noisy_images), i)
+
+                self.writer.add_scalar('psnr', calc_PSNR(images, outputs), i)
 
                 # print statistics
                 running_loss += loss.item()
-                # print("this is the lr {}".format(scheduler.get_last_lr()))
 
                 if i % self.batch_size == self.batch_size - 1:
+                    # Saving checkpoint of the network
+                    self.net.save('./denoising_model_std_0.2.ckpt')
+
+                    print(calc_PSNR(images, outputs))
+                    # The larger the value of PSNR, the more efficient is a corresponding compression or filter method
+                    self.writer.add_scalar('psnr', calc_PSNR(images, outputs), i)
+
                     # Save images
+                    # Visualize
+                    self.writer.add_image('denoising_images1', make_grid(outputs), i)
+                    self.writer.add_image('real_images1', make_grid(images), i)
+                    self.writer.add_image('noisy_images1', make_grid(noisy_images), i)
                     save_image(make_grid(images), fp="images.jpeg")
                     save_image(make_grid(noisy_images), fp="noisy_images.jpeg")
                     save_image(make_grid(outputs), fp="denoising_images.jpeg")

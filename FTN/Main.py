@@ -5,7 +5,7 @@ import shutil
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
-from FTN.Data.HRDataset import HRDataset
+from Data.HRDataset import HRDataset
 from Train import Trainer
 
 
@@ -37,8 +37,10 @@ if __name__ == '__main__':
         [transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-    trainset = HRDataset(args.noise_std)
+    path_dataset = '/Users/danielafrimi/Desktop/University/Lab_Vision/FTN/dataset/DIV2K_train_HR'
+
+    trainset = HRDataset(args.noise_std, dataroot=path_dataset)
     trainloader = DataLoader(trainset, batch_size=16, shuffle=True)
 
-    denoising_trainer = Trainer(trainloader, **args.__dict__)
+    denoising_trainer = Trainer(trainloader, **args.__dict__, load=True)
     denoising_trainer.train()

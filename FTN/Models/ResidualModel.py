@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-import FTN.Models.Block as Block
+import Models.Block as Block
 
 
 class DenoisingModel(nn.Module):
@@ -20,7 +20,6 @@ class DenoisingModel(nn.Module):
         """
         super(DenoisingModel, self).__init__()
 
-        self.device = torch.device('cuda' if torch.cuda.is_available() is not None else 'cpu')
 
         norm_layer = Block.get_norm_layer(norm_type)
 

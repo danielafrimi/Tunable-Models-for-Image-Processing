@@ -1,13 +1,10 @@
-import matplotlib.pyplot as plt
-import numpy as np
-
 import torch
 from torch.utils.data import DataLoader
 from torchvision.datasets import CIFAR10
 import torchvision
 import torchvision.transforms as transforms
 from Models import Model
-from Utils import imshow
+from FTN.Data.Utils import imshow
 
 transform = transforms.Compose(
     [transforms.ToTensor(),

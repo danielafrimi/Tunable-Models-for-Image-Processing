@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 from torch import nn
-from FTN.Models import FTN
+from Models import FTN
 
 
 def get_conv_layer_with_updated_weights(conv_layer_parameters, input_channels, output_channels):

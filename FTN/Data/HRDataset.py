@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import torch.utils.data as data
-import FTN.Utils as Utils
+import Data.Utils as Utils
 import random
 
 
@@ -11,8 +11,7 @@ class HRDataset(data.Dataset):
     DIV2K dataset - using the HR images only
     """
 
-    def __init__(self, noise_level,
-                 dataroot='/Users/danielafrimi/Desktop/University/Lab_Vision/FTN/dataset/DIV2K_train_HR'):
+    def __init__(self, noise_level, dataroot='/cs/labs/werman/daniel023/Lab_vision/FTN/dataset/DIV2K_train_HR'):
         super(HRDataset, self).__init__()
 
         self.paths_LR = None
