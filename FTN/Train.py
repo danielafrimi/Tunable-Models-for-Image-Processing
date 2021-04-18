@@ -3,25 +3,26 @@ import torch.nn as nn
 from tensorboardX import SummaryWriter
 from torchvision.utils import make_grid, save_image
 
-from Models.ResidualModel import DenoisingModel
+
 from Models.SimpleModel import SimpleModel
-from Models.FTN_Resnet import FTN_Resnet
 from Models.Resnet import Resnet
+from Models.FTN_Resnet import FTN_Resnet
 from torch.optim.lr_scheduler import StepLR
-from Utils import calc_PSNR
+from Utils import calc_PSNR, calculate_psnr
+from piq import psnr
 
 
 class Trainer:
 
-    def __init__(self, train_loader, noise_std, log_dir, lr, batch_size=16, load=True):
-        # self.device = torch.device('cuda' if torch.cuda.is_available() is not None else 'cpu')
-        # print(self.device)
+    def __init__(self, train_loader, noise_std, net, log_dir, lr, batch_size=16, load=True):
+        self.device = torch.device('cuda' if torch.cuda.is_available() is not None else 'cpu')
+        print("Using {}".format(self.device))
 
-        # self.net = SimpleModel()
-        # self.net = Resnet()
-        self.net = FTN_Resnet()
+        self.net = net
         if load:
+            print("Loading network weights")
             self.net.load('./denoising_model_std_0.2.ckpt')
+            print("Loaded Succeed")
 
         self.train_loader = train_loader
 
@@ -39,7 +40,7 @@ class Trainer:
             print("Using " + str(num_devices) + " GPU's")
             for i in range(num_devices):
                 print(torch.cuda.get_device_name(i))
-            self.residual_net = nn.DataParallel(self.residual_net)
+            self.net = nn.DataParallel(self.net)
 
     def train(self, num_epochs=70):
         """
@@ -51,27 +52,33 @@ class Trainer:
         # Define the Optimizer and the loss function for the model
         optimizer = torch.optim.Adam(self.net.parameters(), lr=self.lr, betas=(0.9, 0.999))
         criterion = nn.L1Loss()
+        # gamma = decaying factor
+        # scheduler = StepLR(optimizer, step_size=5, gamma=0.1)
 
         net_loss_per_batch = list()
         # todo when using cuda
-        # self.net.to(self.device)
+        self.net.to(self.device)
 
         # Train the model
         for epoch in range(num_epochs):
             print("Epoch number: {}".format(epoch))
             running_loss = 0.0
 
+            # Decay Learning Rate
+            # scheduler.step()
+            # print(scheduler.get_lr())
+
             for i, data in enumerate(self.train_loader, 0):
                 images, noisy_images = data
                 #  todo when using cuda
-                # images, noisy_images = images.to(self.device), noisy_images.to(self.device)
+                images, noisy_images = images.to(self.device), noisy_images.to(self.device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
 
                 # forward + backward + optimize
                 outputs = self.net(noisy_images)
-                print("passed")
+                print("this is the new psnr:", psnr(images, torch.clamp(outputs, min=0., max=1.)))
 
                 # Calculating loss
                 loss = criterion(outputs, images)
@@ -84,28 +91,24 @@ class Trainer:
                 self.writer.add_image('real_images', make_grid(images), i)
                 self.writer.add_image('noisy_images', make_grid(noisy_images), i)
 
-                # todo delete this
-                self.writer.add_scalar('psnr', calc_PSNR(images, outputs), i)
-
-                # print statistics
                 running_loss += loss.item()
-
                 if i % self.batch_size == self.batch_size - 1:
                     # Saving checkpoint of the network
                     self.net.save('./denoising_model_std_0.2.ckpt')
+                    print("Saving network weights")
 
-                    print(calc_PSNR(images, outputs))
                     # The larger the value of PSNR, the more efficient is a corresponding compression or filter method
-                    self.writer.add_scalar('psnr', calc_PSNR(images, outputs), i)
+                    self.writer.add_scalar('psnr', psnr(images, torch.clamp(outputs, min=0., max=1.)), epoch)
 
                     # Save images
-                    # Visualize
-                    self.writer.add_image('denoising_images1', make_grid(outputs), i)
-                    self.writer.add_image('real_images1', make_grid(images), i)
-                    self.writer.add_image('noisy_images1', make_grid(noisy_images), i)
                     save_image(make_grid(images), fp="images.jpeg")
                     save_image(make_grid(noisy_images), fp="noisy_images.jpeg")
                     save_image(make_grid(outputs), fp="denoising_images.jpeg")
+
+                    # Visualize on tensorboard
+                    self.writer.add_image('denoising_images', make_grid(outputs), epoch)
+                    self.writer.add_image('real_images', make_grid(images), epoch)
+                    self.writer.add_image('noisy_images', make_grid(noisy_images), epoch)
 
                     net_loss_per_batch.append((running_loss / self.batch_size))
 
@@ -116,4 +119,5 @@ class Trainer:
         print('Finished Training')
 
         # Save the weights of the trained model
+        print("Saving network weights")
         self.net.save('./denoising_model_std_0.2.ckpt')

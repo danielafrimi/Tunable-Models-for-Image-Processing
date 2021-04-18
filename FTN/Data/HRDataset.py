@@ -45,7 +45,7 @@ class HRDataset(data.Dataset):
         img_HR = torch.from_numpy(np.ascontiguousarray(np.transpose(img_HR, (2, 0, 1)))).float()
         noisy_img = torch.normal(0, self.noise_level, size=img_HR.shape) + img_HR
 
-        return img_HR, noisy_img
+        return img_HR, torch.clamp(noisy_img, min=0., max=1.)
 
     def __len__(self):
         return len(self.paths_LR)

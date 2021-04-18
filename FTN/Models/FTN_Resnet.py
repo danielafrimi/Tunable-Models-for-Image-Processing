@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch
 from Models import FTN
 
+
 def get_conv_layer_with_updated_weights(conv_layer_parameters, input_channels, output_channels):
     # We dont want to learn this layer, we only use it on the input feature map
     generated_conv = nn.Conv2d(input_channels, output_channels, kernel_size=(3, 3), padding=1, padding_mode='zeros') \
@@ -15,7 +16,7 @@ def get_conv_layer_with_updated_weights(conv_layer_parameters, input_channels, o
 
 class conv_ftn_block(nn.Module):
 
-    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=None, bias=False):
+    def __init__(self, in_channels, out_channels, alpha, kernel_size, stride=1, padding=None, bias=False):
         super(conv_ftn_block, self).__init__()
         if padding == None:
             if stride == 1:
@@ -26,7 +27,7 @@ class conv_ftn_block(nn.Module):
         self.conv = nn.Conv2d(in_channels=in_channels, out_channels=out_channels,
                               kernel_size=kernel_size, stride=stride, padding=padding, bias=bias)
 
-        self.ftn = FTN.FTNBlock(alpha=0, in_nc=64, out_nc=64)
+        self.ftn = FTN.FTNBlock(alpha=alpha, in_nc=64, out_nc=64)
 
         self.bn = nn.BatchNorm2d(out_channels)
         self.relu = nn.ReLU(inplace=True)
@@ -43,13 +44,13 @@ class conv_ftn_block(nn.Module):
 
 
 class FTN_Resnet(nn.Module):
-    def __init__(self, input_channels=3):
+    def __init__(self,  alpha, input_channels=3):
         super(FTN_Resnet, self).__init__()
 
         self.conv1 = nn.Sequential(nn.Conv2d(in_channels=input_channels, out_channels=64,
                                              kernel_size=3, stride=1, padding=1), nn.ReLU(inplace=True))
         # todo change to bias True?
-        self.blocks = self._make_layers(conv_ftn_block, kernel_size=3, num_channels=64, num_of_layers=10, bias=False)
+        self.blocks = self._make_layers(conv_ftn_block, alpha, kernel_size=3, num_channels=64, num_of_layers=10, bias=False)
 
         self.output = nn.Conv2d(in_channels=64, out_channels=input_channels, kernel_size=3, stride=1, padding=1)
         for m in self.modules():
@@ -66,10 +67,10 @@ class FTN_Resnet(nn.Module):
                         m.weight.data[j] = -clip_b
                 m.running_var.fill_(0.01)
 
-    def _make_layers(self, block, kernel_size, num_channels, num_of_layers, padding=1, bias=False):
+    def _make_layers(self, block, alpha, kernel_size, num_channels, num_of_layers, padding=1, bias=False):
 
-        layers = [block(in_channels=num_channels, out_channels=num_channels, kernel_size=kernel_size, padding=padding,
-                         bias=bias) for _ in range(num_of_layers)]
+        layers = [block(in_channels=num_channels, out_channels=num_channels, alpha=alpha, kernel_size=kernel_size, padding=padding,
+                        bias=bias) for _ in range(num_of_layers)]
         return nn.Sequential(*layers)
 
     def forward(self, x):
