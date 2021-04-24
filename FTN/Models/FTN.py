@@ -16,11 +16,28 @@ class FTN(nn.Module):
         super(FTN, self).__init__()
 
         # input size of the FTN is quite small (usually 3 × 3 × C) because we operate it on the filter itself
-        self.conv1 = nn.Conv2d(in_nc, out_nc, kernel_size=(1, 1), groups=group_blocks)
+        self.conv1 = nn.Conv2d(in_nc, out_nc, kernel_size=(1, 1), groups=group_blocks).requires_grad_(True)
 
         # PReLU(x)=max(0,x)+a∗min(0,x), init alpha with 1 (alpha is learnable)
         self.pReLu = nn.PReLU(init=1)
-        self.conv2 = nn.Conv2d(out_nc, in_nc, kernel_size=(1, 1), groups=group_blocks)
+        self.conv2 = nn.Conv2d(out_nc, in_nc, kernel_size=(1, 1), groups=group_blocks).requires_grad_(True)
+
+        # self.init_weights()
+
+    # def init_weights(self):
+    #     for m in self.modules():
+    #         if isinstance(m, nn.Conv2d):
+    #             m.weight.data.normal_(0, (2 / (9.0 * 64)) ** 0.5)
+    #         if isinstance(m, nn.BatchNorm2d):
+    #             m.weight.data.normal_(0, (2 / (9.0 * 64)) ** 0.5)
+    #             clip_b = 0.025
+    #             w = m.weight.data.shape[0]
+    #             for j in range(w):
+    #                 if m.weight.data[j] >= 0 and m.weight.data[j] < clip_b:
+    #                     m.weight.data[j] = clip_b
+    #                 elif m.weight.data[j] > -clip_b and m.weight.data[j] < 0:
+    #                     m.weight.data[j] = -clip_b
+    #             m.running_var.fill_(0.01)
 
     def forward(self, x):
         # x is the filter weights
@@ -45,7 +62,12 @@ class FTNBlock(nn.Module):
 
         # The FTN layer get kernel as input and produce a tensor of the same size
         self.FTN_layer = FTN(in_nc=in_nc, out_nc=in_nc, group_blocks=64)
-        self.conv = nn.Conv2d(in_nc, in_nc, kernel_size=(1, 1))
+        self.conv = nn.Conv2d(in_nc, in_nc, kernel_size=(1, 1)).requires_grad_(True)
+
+        self.init_weights()
+
+    def init_weights(self):
+        nn.init.xavier_uniform(self.conv.weight)
 
     def forward(self, x):
         input_filter = x

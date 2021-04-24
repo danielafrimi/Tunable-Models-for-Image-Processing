@@ -11,6 +11,9 @@ from Train import Trainer
 from Models.SimpleModel import SimpleModel
 from Models.Resnet import Resnet
 from Models.FTN_Resnet import FTN_Resnet
+from Models import FTN
+
+
 
 def parse_args():
     p = argparse.ArgumentParser()
@@ -22,8 +25,8 @@ def parse_args():
     p.add_argument('--batch_size', type=int, default=16)
     p.add_argument('--lr', type=float, default=0.001)
     # todo add end_noise and start noise
-    p.add_argument('--noise_std', type=float, default=0.2)
-
+    p.add_argument('--noise_std', type=float, default=0.6)
+    p.add_argument('--data_path', type=str, default='/cs/labs/werman/daniel023/Lab_vision/FTN/dataset/DIV2K_train_HR')
     args = p.parse_args()
     return args
 
@@ -37,19 +40,19 @@ if __name__ == '__main__':
     if os.path.exists(args.log_dir):
         shutil.rmtree(args.log_dir)
 
-    transform = transforms.Compose(
-        [transforms.ToTensor(),
-         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-
-    # path_dataset = '/Users/danielafrimi/Desktop/University/Lab_Vision/FTN/dataset/DIV2K_train_HR'
-    path_dataset = '/cs/labs/werman/daniel023/Lab_vision/FTN/dataset/DIV2K_train_HR'
-
+    path_dataset = '/Users/danielafrimi/Desktop/University/Lab_Vision/FTN/dataset/DIV2K_train_HR'
+    # path_dataset = '/cs/labs/werman/daniel023/Lab_vision/FTN/dataset/DIV2K_train_HR'
+    # path_dataset = args.data_path
     trainset = HRDataset(args.noise_std, dataroot=path_dataset)
     trainloader = DataLoader(trainset, batch_size=16, shuffle=True)
 
-    # ftn_resnet = FTN_Resnet(alpha=0)
-    net = Resnet()
+    ftn_layers = [FTN.FTNBlock(alpha=0, in_nc=64, out_nc=64) for i in range(1)]
+    net = FTN_Resnet(alpha=0, ftn_layers=ftn_layers)
+    # net = Resnet()
+    # net = SimpleModel()
     print("{} Created".format(net.__repr__()))
+
+    del args.data_path
 
     denoising_trainer = Trainer(trainloader, net=net, **args.__dict__, load=False)
     denoising_trainer.train()

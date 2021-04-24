@@ -37,18 +37,18 @@ class SimpleModel(nn.Module):
         self.input_number_channels = input_number_channels
         self.output_number_channels = output_number_channels
 
-        self.conv1 = nn.Conv2d(in_channels=3, out_channels=60, kernel_size=3, padding=1, padding_mode='zeros')
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, padding=1, padding_mode='zeros')
 
-        self.ftn1 = FTN.FTNBlock(alpha=0, in_nc=3, out_nc=60)
+        self.ftn1 = FTN.FTNBlock(alpha=0, in_nc=64, out_nc=64)
 
-        self.conv2 = nn.Conv2d(in_channels=60, out_channels=60, kernel_size=(3, 3), padding=1, padding_mode='zeros')
-        self.conv3 = nn.Conv2d(in_channels=60, out_channels=60, kernel_size=(3, 3), padding=1, padding_mode='zeros')
-        self.conv4 = nn.Conv2d(in_channels=60, out_channels=60, kernel_size=(3, 3), padding=1, padding_mode='zeros')
-        self.conv5 = nn.Conv2d(in_channels=60, out_channels=3, kernel_size=(3, 3), padding=1,  padding_mode='zeros')
+        self.conv2 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), padding=1, padding_mode='zeros')
+        self.conv3 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), padding=1, padding_mode='zeros')
+        self.conv4 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), padding=1, padding_mode='zeros')
+        self.conv5 = nn.Conv2d(in_channels=64, out_channels=3, kernel_size=(3, 3), padding=1,  padding_mode='zeros')
 
-        self.bn1 = nn.BatchNorm2d(60)
-        self.bn2 = nn.BatchNorm2d(60)
-        self.bn3 = nn.BatchNorm2d(60)
+        self.bn1 = nn.BatchNorm2d(64)
+        self.bn2 = nn.BatchNorm2d(64)
+        self.bn3 = nn.BatchNorm2d(64)
 
     def forward(self, x):
         # todo The conv_layer_parameters is tensor of size torch.Size([60, 3, 3, 3])
