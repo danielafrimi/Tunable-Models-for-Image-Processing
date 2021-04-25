@@ -89,8 +89,8 @@ class Trainer:
                 for optimizer_ftn in ftn_optimizers:
                     optimizer_ftn.step()
 
-                plot_grad_flow(self.net.named_parameters())
-
+                # plot_grad_flow(self.net.named_parameters())
+                print("Daniel")
                 self.net.check_params()
 
                 # Visualize
