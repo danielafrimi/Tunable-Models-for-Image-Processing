@@ -45,11 +45,12 @@ class FTNBlock(nn.Module):
 
         # The FTN layer get kernel as input and produce a tensor of the same size
         # self.FTN_layer = FTN(in_nc=in_nc, out_nc=in_nc, group_blocks=64) # todo delete?
+
         # input size of the FTN is quite small (usually 3 × 3 × C) because we operate it on the filter itself
         self.conv1 = nn.Conv2d(in_nc, out_nc, kernel_size=(1, 1), groups=64).requires_grad_(True)
 
         # PReLU(x)=max(0,x)+a∗min(0,x), init alpha with 1 (alpha is learnable)
-        self.pReLu = nn.PReLU(init=1)
+        self.pReLu = nn.PReLU(init=1).requires_grad_(True)
         self.conv2 = nn.Conv2d(out_nc, in_nc, kernel_size=(1, 1), groups=64).requires_grad_(True)
         self.conv = nn.Conv2d(in_nc, in_nc, kernel_size=(1, 1)).requires_grad_(True)
 
@@ -58,18 +59,20 @@ class FTNBlock(nn.Module):
     def forward(self, x):
         input_filter = x
         # x is the filter weights - torch.Size([64, 64, 3, 3])
-        identity = x
         x = self.conv1(x)
         x = self.pReLu(x)
-        x = self.conv2(x) + identity
+        x = self.conv2(x) + input_filter
 
         # todo the weights doesnt change here!!
         self.check_weights.append(self.conv1.weight)
+        print("DDDDDDDDDDDDDDDDDD", self.conv1.weight)
         # y = self.FTN_layer(x)
         y = self.conv(x)
 
         # Weighted sum of both filters
         return (input_filter * (1 - self.alpha)) + (y * self.alpha)
+
+
 
 # train the main convolutional filter for the initial level with α = 0. Then, we freeze the main network and train
 # the FTN only for the second level with α = 1, which breaks skip- connection. Next, the FTN learns the task

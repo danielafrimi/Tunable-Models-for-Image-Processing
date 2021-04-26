@@ -46,8 +46,8 @@ if __name__ == '__main__':
     trainset = HRDataset(args.noise_std, dataroot=path_dataset)
     trainloader = DataLoader(trainset, batch_size=16, shuffle=True)
 
-    ftn_layers = [FTN.FTNBlock(alpha=0, in_nc=64, out_nc=64) for i in range(1)]
-    net = FTN_Resnet(alpha=0, ftn_layers=ftn_layers)
+    ftn_layers = [FTN.FTNBlock(alpha=0.5, in_nc=64, out_nc=64) for i in range(1)]
+    net = FTN_Resnet(alpha=0.5, ftn_layers=ftn_layers)
     # net = Resnet()
     # net = SimpleModel()
     print("{} Created".format(net.__repr__()))

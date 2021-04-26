@@ -7,7 +7,7 @@ from torch.nn.parameter import Parameter
 
 class Kernels(nn.Module):
 
-    def __init__(self, z_num=(3,3), z_dim=64):
+    def __init__(self, z_num=(3, 3), z_dim=64):
         super(Kernels, self).__init__()
 
         self.z_list = nn.ParameterList()
@@ -30,22 +30,23 @@ class conv_ftn_block(nn.Module):
         super(conv_ftn_block, self).__init__()
         if padding is None:
             if stride == 1:
-                padding = (kernel_size - 1) // 2
+                self.padding = (kernel_size - 1) // 2
             else:
-                padding = 0
+                self.padding = 0
+        else:
+            self.padding = 1
 
-        self.conv = nn.Conv2d(in_channels=in_channels, out_channels=out_channels,
-                              kernel_size=kernel_size, stride=stride, padding=padding, bias=bias)
+        # self.conv = nn.Conv2d(in_channels=in_channels, out_channels=out_channels,
+        #                       kernel_size=kernel_size, stride=stride, padding=padding, bias=bias)
 
         self.bn = nn.BatchNorm2d(out_channels)
         self.relu = nn.ReLU(inplace=True)
-        self.check = []
 
     def forward(self, x, conv_layer_parameters):
         residual = x
 
         # Creating a convolution layer for operating the previous feature map
-        x = self.relu(self.bn(functional.conv2d(x, conv_layer_parameters, padding=1)))
+        x = self.relu(self.bn(functional.conv2d(x, conv_layer_parameters, padding=self.padding )))
 
         return x + residual
 
@@ -86,11 +87,9 @@ class FTN_Resnet(nn.Module):
         # perform update
         for name, params in self.named_parameters():
             if (self.old_params[name] == params).all():
-                print("True")
-                print(name)
+                print("True", name)
             else:
-                print("False")
-                print(name)
+                print("False", name)
 
     def forward(self, x):
         x = self.conv1(x)
