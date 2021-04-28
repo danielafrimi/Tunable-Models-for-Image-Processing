@@ -1,0 +1,7 @@
+1. Cisco
+2. login to phoenix using rlogin command
+3. srun --mem=400m -c2 --time=1-12 --gres=gpu:1,vmem:5g --killable --pty $SHELL
+4. load virtual-env (source lab_env/bin/activate.csh)
+5. module load torch
+6. module load cuda
+7.  python3 <name_file>.py
