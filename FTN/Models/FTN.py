@@ -47,32 +47,44 @@ class FTNBlock(nn.Module):
         # self.FTN_layer = FTN(in_nc=in_nc, out_nc=in_nc, group_blocks=64) # todo delete?
 
         # input size of the FTN is quite small (usually 3 × 3 × C) because we operate it on the filter itself
-        self.conv1 = nn.Conv2d(in_nc, out_nc, kernel_size=(1, 1), groups=64).requires_grad_(True)
+        self.conv1_ftn = nn.Conv2d(in_nc, out_nc, kernel_size=(1, 1), groups=16).requires_grad_(True)
 
         # PReLU(x)=max(0,x)+a∗min(0,x), init alpha with 1 (alpha is learnable)
         self.pReLu = nn.PReLU(init=1).requires_grad_(True)
-        self.conv2 = nn.Conv2d(out_nc, in_nc, kernel_size=(1, 1), groups=64).requires_grad_(True)
-        self.conv = nn.Conv2d(in_nc, in_nc, kernel_size=(1, 1)).requires_grad_(True)
 
-        self.check_weights = []
+        # todo maybe change the out_nc and in_nc to be 16? for the group as they said in the paper???
+        self.conv2_ftn = nn.Conv2d(out_nc, in_nc, kernel_size=(1, 1), groups=16).requires_grad_(True)
+        self.conv3_ftn = nn.Conv2d(in_nc, in_nc, kernel_size=(1, 1)).requires_grad_(True)
+
+        self._init_weights()
+
+    def _init_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                m.weight.data.normal_(0, (2 / (9.0 * 64)) ** 0.5)
+
+        # todo initialize with identity filter and zero biases????
+        # weights = torch.tensor([[0., 0., 0.],
+        #                         [0., 1., 0.],
+        #                         [0., 0., 0.]])
+        # weights = weights.view(1, 1, 3, 3).repeat(1, nb_channels, 1, 1)
+        # output = F.conv2d(x, weights) todo or define a conv object and than
+        # with torch.no_grad():
+        #     conv.weight = nn.Parameter(weights)
 
     def forward(self, x):
         input_filter = x
         # x is the filter weights - torch.Size([64, 64, 3, 3])
-        x = self.conv1(x)
-        x = self.pReLu(x)
-        x = self.conv2(x) + input_filter
 
-        # todo the weights doesnt change here!!
-        self.check_weights.append(self.conv1.weight)
-        print("DDDDDDDDDDDDDDDDDD", self.conv1.weight)
-        # y = self.FTN_layer(x)
-        y = self.conv(x)
+        # FTN Layer
+        x = self.conv1_ftn(x)
+        x = self.pReLu(x)
+        x = self.conv2_ftn(x) + input_filter
+
+        y = self.conv3_ftn(x)
 
         # Weighted sum of both filters
         return (input_filter * (1 - self.alpha)) + (y * self.alpha)
-
-
 
 # train the main convolutional filter for the initial level with α = 0. Then, we freeze the main network and train
 # the FTN only for the second level with α = 1, which breaks skip- connection. Next, the FTN learns the task

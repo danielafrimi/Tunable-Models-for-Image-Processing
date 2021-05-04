@@ -77,3 +77,15 @@ def plot_grad_flow(named_parameters):
                 Line2D([0], [0], color="k", lw=4)], ['max-gradient', 'mean-gradient', 'zero-gradient'])
     plt.show()
     plt.savefig('Gradient flow.png')
+
+
+def freeze_network_weights(model):
+    """
+    Freeze the weights that unrelated to FTN layer
+    :param model:
+    :return:
+    """
+    for parameter_name, parameter in model.named_parameters():
+        parameter.requires_grad = False
+        if parameter_name.find('ftn_layers') >= 0:
+            parameter.requires_grad = True

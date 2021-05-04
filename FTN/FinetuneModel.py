@@ -45,14 +45,8 @@ if __name__ == '__main__':
     # path_dataset = args.data_path
     # path_dataset = '/cs/labs/werman/daniel023/Lab_vision/FTN/dataset/DIV2K_train_HR'
 
-    # todo change it to more formal
-    num_layers = 10
-    # todo more than 1 gpu
-    # ftn_layers = [nn.DataParallel(FTN.FTNBlock(alpha=0, in_nc=64, out_nc=64)) for i in range(num_layers)]
-    ftn_layers = [FTN.FTNBlock(alpha=1, in_nc=64, out_nc=64) for i in range(num_layers)]
-    model = FTN_Resnet(alpha=1, ftn_layers=ftn_layers, num_layers=num_layers)
-    # net = Resnet()
-    print("{} Created with {} num layers on {} noise level ".format(model.__repr__(), num_layers, 0.6))
+    model = FTN_Resnet(alpha=1, num_layers=5)
+    print("FTN RESNET Created with {} num layers on {} noise level ".format(model.num_layers, 0.6))
 
     del args.data_path
 
@@ -60,7 +54,7 @@ if __name__ == '__main__':
     train_high_noise = HRDataset(noise_level=0.6, dataroot=path_dataset)
     trainloader = DataLoader(train_high_noise, batch_size=16, shuffle=True)
 
-    denoising_trainer = Trainer(trainloader, model=model, **args.__dict__, finetune=True, load=True, GPU=True)
+    denoising_trainer = Trainer(trainloader, model=model, **args.__dict__, finetune=True, load=True, GPU=False)
     denoising_trainer.train()
-#
-# # todo start interpolation in another file
+
+ # todo start interpolation in another file
