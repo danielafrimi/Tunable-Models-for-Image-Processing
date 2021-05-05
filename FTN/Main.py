@@ -63,6 +63,7 @@ if __name__ == '__main__':
 
 # TODO
 #  1. check if kernels update and ftn not with alpoha=0. the same with alpha=1  - WORKS!
-#  2.check if freezing network works
-#  3. run experiments with larger number of epochs in finetune with sbatch 4.
+#  2.check if freezing network works - WORKS!
+#  3. run experiments with larger number of epochs in finetune with sbatch
+#  4. filter as identity - to initialize them at the beginning that way
 

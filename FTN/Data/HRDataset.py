@@ -29,8 +29,7 @@ class HRDataset(data.Dataset):
         img_HR = Utils.read_img(HR_path)
 
         if not self.crop:
-            noisy_image = 20 / 255.0 * np.random.normal(size=np.shape(img_HR)) + img_HR
-            # todo check this!!!!
+            noisy_image = torch.normal(0, self.noise_level, size=img_HR.shape) + img_HR
             return np.transpose(img_HR, (2, 0, 1)), np.transpose(noisy_image, (2, 0, 1))
 
         # todo modcrop in the validation / test phase
@@ -51,7 +50,7 @@ class HRDataset(data.Dataset):
 
         img_HR = torch.from_numpy(np.ascontiguousarray(np.transpose(img_HR, (2, 0, 1)))).float()
         noisy_img = torch.normal(0, self.noise_level, size=img_HR.shape) + img_HR
-        noisy_img = 20 / 255.0 * np.random.normal(size=np.shape(img_HR)) + img_HR
+        # sigma / 255.0 * np.random.normal(size=np.shape(self.data))
 
         return img_HR, torch.clamp(noisy_img, min=0., max=1.)
 
