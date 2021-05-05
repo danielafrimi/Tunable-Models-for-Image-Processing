@@ -34,14 +34,14 @@ class Trainer:
         self.train_loader = train_loader
         self.lr = lr
         self.batch_size = batch_size
-        self.num_epochs = 30
+        self.num_epochs = 30 if not finetune else 50
 
         # run tensorboard --logdir=runs on terminal
         self.writer = SummaryWriter(log_dir=log_dir)
 
         if load:
             print("Loading network weights")
-            self.model.load('denoising_model_model_FTN_RESNET_std_0.2_lr_0.001_batch_size_16.ckpt')
+            self.model.load('denoising_model_model_FTN_RESNET_std_0.2_lr_0.001_batch_size_16_good.ckpt')
             print("Loaded Succeed")
 
         num_devices = torch.cuda.device_count()
@@ -81,7 +81,7 @@ class Trainer:
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
-                self.model.save_params()
+                # self.model.save_params()
 
                 # forward + backward + optimize
                 outputs = self.model(noisy_images)
@@ -95,13 +95,13 @@ class Trainer:
                 for optimizer_ftn in ftn_optimizers:
                     optimizer_ftn.step()
 
-                self.model.check_params()
+                # self.model.check_params()
 
                 running_loss += loss.item()
                 if i % self.batch_size == self.batch_size - 1:
                     # Saving checkpoint of the network
-                    print("Saving network weights - denoising_model_FTN_RESNET_std_{}_lr_{}_batch_size_{}" \
-                          .format(self.noise_std, self.lr, self.batch_size))
+                    print("Saving network weights - denoising_model_FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_finetune_{}" \
+                          .format(self.noise_std, self.lr, self.batch_size, self.num_epochs, self.finetune))
 
                     self.model.save('./denoising_model_FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_finetune_{}.ckpt'
                                     .format(self.noise_std, self.lr, self.batch_size, self.num_epochs, self.finetune))

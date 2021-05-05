@@ -115,7 +115,6 @@ class FTN_Resnet(nn.Module):
     def forward(self, x):
         x = self.conv1(x)
         for i in range(self.num_layers):
-            # kernel_weights = self.kernels[i](self.ftn_layers[i])
             kernel_weights = self.ftn_layers[i](self.kernels[i].kernel_parameters)
             x = self.blocks[i](x, kernel_weights)
 

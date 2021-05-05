@@ -2,18 +2,11 @@ import argparse
 import os
 import shutil
 
-import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
 from Data.HRDataset import HRDataset
-from Train import Trainer
-
-from Models.SimpleModel import SimpleModel
-from Models.Resnet import Resnet
 from Models.FTN_Resnet import FTN_Resnet
-from Models import FTN
-import torch.nn as nn
-
+from Train import Trainer
 
 
 def parse_args():
@@ -24,7 +17,7 @@ def parse_args():
 
     # opt
     p.add_argument('--batch_size', type=int, default=16)
-    p.add_argument('--lr', type=float, default=0.001)
+    p.add_argument('--lr', type=float, default=0.01)
     p.add_argument('--noise_std', type=float, default=0.2)
     p.add_argument('--data_path', type=str, default='/cs/labs/werman/daniel023/Lab_vision/FTN/dataset/DIV2K_train_HR')
     args = p.parse_args()
@@ -51,10 +44,8 @@ if __name__ == '__main__':
     del args.data_path
 
     # Finetune
-    train_high_noise = HRDataset(noise_level=0.6, dataroot=path_dataset)
-    trainloader = DataLoader(train_high_noise, batch_size=16, shuffle=True)
+    trainset = HRDataset(noise_level=0.6, dataroot=path_dataset)
+    trainloader = DataLoader(trainset, batch_size=16, shuffle=True)
 
     denoising_trainer = Trainer(trainloader, model=model, **args.__dict__, finetune=True, load=True, GPU=False)
     denoising_trainer.train()
-
- # todo start interpolation in another file
