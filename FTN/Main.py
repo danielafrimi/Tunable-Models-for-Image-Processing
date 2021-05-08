@@ -2,18 +2,11 @@ import argparse
 import os
 import shutil
 
-import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
 from Data.HRDataset import HRDataset
-from Train import Trainer
-
-from Models.SimpleModel import SimpleModel
-from Models.Resnet import Resnet
 from Models.FTN_Resnet import FTN_Resnet
-from Models import FTN
-import torch.nn as nn
-
+from Train import Trainer
 
 
 def parse_args():
@@ -37,9 +30,9 @@ if __name__ == '__main__':
     print("This is the run name {}".format(run_name))
 
     # Create a directory with log name
-    args.log_dir = os.path.join(args.log_dir, run_name)
-    if os.path.exists(args.log_dir):
-        shutil.rmtree(args.log_dir)
+    # args.log_dir = os.path.join(args.log_dir, run_name)
+    # if os.path.exists(args.log_dir):
+    #     shutil.rmtree(args.log_dir)
 
     path_dataset = '/Users/danielafrimi/Desktop/University/Lab_Vision/FTN/dataset/DIV2K_train_HR'
     # path_dataset = args.data_path
@@ -48,22 +41,22 @@ if __name__ == '__main__':
     trainset = HRDataset(args.noise_std, dataroot=path_dataset)
     trainloader = DataLoader(trainset, batch_size=16, shuffle=True)
 
-    # todo change it to more formal
-    # todo more than 1 gpu
-    # ftn_layers = [nn.DataParallel(FTN.FTNBlock(alpha=0, in_nc=64, out_nc=64)) for i in range(num_layers)]
-    model = FTN_Resnet(alpha=0, num_layers=5)
+    model = FTN_Resnet(alpha=0, num_layers=1)
 
-    print("'FTN_RESNET' Created with {} num layers on {}".format(model.num_layers, args.noise_std))
+    print("FTN_RESNET Created with {} layers on noise {}".format(model.num_layers, args.noise_std))
 
     del args.data_path
 
-    # FIRST TRAIN
-    denoising_trainer = Trainer(trainloader, model=model, **args.__dict__, finetune=False, load=False, GPU=False)
+    # FIRST STEP
+    denoising_trainer = Trainer(trainloader, model=model, **args.__dict__, finetune=False, load=False, CUDA=False,
+                                num_layer=1)
     denoising_trainer.train()
 
 # TODO
-#  1. check if kernels update and ftn not with alpoha=0. the same with alpha=1  - WORKS!
-#  2.check if freezing network works - WORKS!
 #  3. run experiments with larger number of epochs in finetune with sbatch
-#  4. filter as identity - to initialize them at the beginning that way
+#  4. filter as identity - to initialize them at the beginning that way -
+#  there is a problem fix it and run first stage
+#  6. lr scheulder
+#  7. train on small layer (5) with 0.001 for 20 epochs
+
 

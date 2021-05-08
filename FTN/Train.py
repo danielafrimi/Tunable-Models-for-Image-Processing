@@ -1,27 +1,23 @@
 import torch
 import torch.nn as nn
+from piq import psnr
 from tensorboardX import SummaryWriter
 from torchvision.utils import make_grid, save_image
 
-from Models.SimpleModel import SimpleModel
-from Models.Resnet import Resnet
-from Models import FTN
-from Models.FTN_Resnet import FTN_Resnet
-from torch.optim.lr_scheduler import StepLR
-from piq import psnr
-from Utils import plot_train_data, plot_grad_flow
 from Utils import freeze_network_weights
+from Utils import plot_train_data
 
 
 class Trainer:
 
-    def __init__(self, train_loader, noise_std, model, log_dir, lr, batch_size=16, finetune=False, load=True,
-                 GPU=False):
+    def __init__(self, train_loader, noise_std, model, log_dir=None, lr=0.001, batch_size=16, finetune=False, load=True,
+                 CUDA=False, num_layer=10):
         self.device = torch.device('cuda' if torch.cuda.is_available() is not None else 'cpu')
         print("Using {}".format(self.device))
 
         self.model = model
-        self.GPU = GPU
+        self.GPU = CUDA
+        self.num_layers = num_layer
 
         # std of a Gaussian for noising the images
         self.noise_std = noise_std if not finetune else 0.6
@@ -37,7 +33,7 @@ class Trainer:
         self.num_epochs = 30 if not finetune else 50
 
         # run tensorboard --logdir=runs on terminal
-        self.writer = SummaryWriter(log_dir=log_dir)
+        # self.writer = SummaryWriter(log_dir=log_dir)
 
         if load:
             print("Loading network weights")
@@ -59,9 +55,9 @@ class Trainer:
         print("Start Training with lr={}, batch_size={}".format(self.lr, self.batch_size))
 
         # Define the Optimizer and the loss function for the model
-        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr, betas=(0.9, 0.999))
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr, betas=(0.5, 0.999))
         criterion = nn.L1Loss()
-        ftn_optimizers = self.get_ftn_optimizers()
+        ftn_optimizers = self._get_ftn_optimizers()
 
         loss_per_batch = list()
         PSNR_per_batch = list()
@@ -95,16 +91,21 @@ class Trainer:
                 for optimizer_ftn in ftn_optimizers:
                     optimizer_ftn.step()
 
+                # if epoch % 2 == 0:
+                #     optimizer.param_groups[0]['lr'] *= 0.9
+                #     print(optimizer.param_groups[0]['lr'])
+
                 # self.model.check_params()
 
                 running_loss += loss.item()
                 if i % self.batch_size == self.batch_size - 1:
                     # Saving checkpoint of the network
-                    print("Saving network weights - denoising_model_FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_finetune_{}" \
-                          .format(self.noise_std, self.lr, self.batch_size, self.num_epochs, self.finetune))
+                    print("Saving network weights - denoising_model_FTN_RESNET_"
+                          "std_{}_lr_{}_batch_size_{}_epochs_{}_layer_{}_finetune_{}" \
+                          .format(self.noise_std, self.lr, self.batch_size, self.num_epochs, self.num_layers, self.finetune))
 
-                    self.model.save('./denoising_model_FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_finetune_{}.ckpt'
-                                    .format(self.noise_std, self.lr, self.batch_size, self.num_epochs, self.finetune))
+                    self.model.save('./FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_layer_{}_finetune_{}.ckpt'
+                                    .format(self.noise_std, self.lr, self.batch_size, self.num_epochs,  self.num_layers, self.finetune))
 
                     # Save images
                     print("saving images batchsize{} lr{}.jpeg".format(self.batch_size, self.lr))
@@ -131,16 +132,20 @@ class Trainer:
         plot_train_data(PSNR_per_batch, ["PSNR", 'Number of Mini-Batches'], name='psnr')
 
         # Save the weights of the trained model
-        print("Saving network weights")
-        self.model.save('./denoising_model_model_{}_std_{}_lr_{}_batch_size_{}.ckpt'
-                        .format(self.model.__repr__(), self.noise_std, self.lr, self.batch_size))
+        print("Saving network weights - THE END")
+        self.model.save('./FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_layer_{}_finetune_{}.ckpt'
+                        .format(self.noise_std, self.lr, self.batch_size, self.num_epochs, self.num_layers,
+                                self.finetune))
 
-    def get_ftn_optimizers(self):
+    def train_epoch(self):
+        pass
+
+    def _get_ftn_optimizers(self):
         ftn_layers = self.model.get_ftn()
         if self.GPU:
             for ftn_layer in ftn_layers:
                 ftn_layer.to(self.device)
 
-        optimizers = [torch.optim.Adam(ftn_layer.parameters(), lr=self.lr, betas=(0.9, 0.999)) for ftn_layer in
+        optimizers = [torch.optim.Adam(ftn_layer.parameters(), lr=self.lr, betas=(0.5, 0.999)) for ftn_layer in
                       ftn_layers]
         return optimizers

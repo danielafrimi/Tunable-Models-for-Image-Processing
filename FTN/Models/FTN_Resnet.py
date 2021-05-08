@@ -7,7 +7,7 @@ from torch.nn.parameter import Parameter
 
 class Kernels(nn.Module):
 
-    def __init__(self, z_num=(3, 3), z_dim=64):
+    def __init__(self):
         super(Kernels, self).__init__()
 
         self.z_list = nn.ParameterList()
@@ -16,8 +16,7 @@ class Kernels(nn.Module):
         kernel.weight.data.normal_(0, (2 / (9.0 * 64)) ** 0.5)
 
         self.kernel_parameters = Parameter(kernel.weight)
-        # todo add bias parameters ? tensor of size out_nc
-        self.kernel_bias = None
+        # self.kernel_bias = torch.nn.init.xavier_uniform_(kernel.bias)
 
     def forward(self, ftn_layer):
         # print(self.kernel_parameters)
@@ -89,7 +88,7 @@ class FTN_Resnet(nn.Module):
 
     def _init_weights(self):
         for m in self.modules():
-            # print(m)
+            # print("res", m)
             if isinstance(m, nn.Conv2d):
                 m.weight.data.normal_(0, (2 / (9.0 * 64)) ** 0.5)
 
@@ -103,6 +102,9 @@ class FTN_Resnet(nn.Module):
                     elif -clip_b < m.weight.data[j] < 0:
                         m.weight.data[j] = -clip_b
                 m.running_var.fill_(0.01)
+
+        for ftn in self.ftn_layers:
+            ftn.init_weights()
 
     def _make_blocks(self, block, alpha, kernel_size, num_channels, num_of_layers, padding=1, bias=False):
 
@@ -130,6 +132,8 @@ class FTN_Resnet(nn.Module):
 
     def get_ftn(self):
         return self.ftn_layers
+
+    ### FOR CHECKING THE PARAMETER WEATHER THEY CHANGED OR NOT
 
     def save_params(self):
         for name, params in self.named_parameters():

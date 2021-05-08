@@ -4,6 +4,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from matplotlib.lines import Line2D
+from torchvision.utils import make_grid
+
+
+def imshow(img, is_grid=True):
+    if is_grid:
+        img = make_grid(img)
+
+    img = img / 2 + 0.5  # un normalize
+    numpy_images = img.numpy()
+    plt.imshow(np.transpose(numpy_images, (2, 1, 0)))
+    plt.show()
 
 
 def calc_PSNR(img1, img2):

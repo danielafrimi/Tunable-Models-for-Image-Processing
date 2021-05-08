@@ -3,19 +3,9 @@ import numpy as np
 import os
 import cv2
 import random
-from torchvision.utils import make_grid
+
 
 IMG_EXTENSIONS = ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP']
-
-
-def imshow(img, is_grid=True):
-    if is_grid:
-        img = make_grid(img)
-
-    img = img / 2 + 0.5  # un normalize
-    numpy_images = img.numpy()
-    plt.imshow(np.transpose(numpy_images, (2, 1, 0)))
-    plt.show()
 
 
 def is_image_file(filename):

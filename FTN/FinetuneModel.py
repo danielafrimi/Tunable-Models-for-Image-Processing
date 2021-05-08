@@ -47,5 +47,5 @@ if __name__ == '__main__':
     trainset = HRDataset(noise_level=0.6, dataroot=path_dataset)
     trainloader = DataLoader(trainset, batch_size=16, shuffle=True)
 
-    denoising_trainer = Trainer(trainloader, model=model, **args.__dict__, finetune=True, load=True, GPU=False)
+    denoising_trainer = Trainer(trainloader, model=model, **args.__dict__, finetune=True, load=True, CUDA=False)
     denoising_trainer.train()

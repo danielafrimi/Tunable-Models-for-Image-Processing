@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+
 # train the main convolutional filter for the initial level with α = 0. Then, we freeze the main network and train
 # the FTN only for the second level with α = 1, which breaks skip- connection. Next, the FTN learns the task
 # transition itself. To that end, the FTN approximates kernels of the second level we can interpolate between two
@@ -29,7 +30,6 @@ class FTN(nn.Module):
         self.conv2 = nn.Conv2d(out_nc, in_nc, kernel_size=(1, 1), groups=group_blocks).requires_grad_(True)
 
     def forward(self, x):
-        # x is the filter weights - torch.Size([64, 64, 3, 3])
         identity = x
         x = self.conv1(x)
         x = self.pReLu(x)
@@ -63,11 +63,10 @@ class FTNBlock(nn.Module):
         self.conv2_ftn = nn.Conv2d(out_nc, in_nc, kernel_size=(1, 1), groups=64).requires_grad_(True)
         self.conv3_ftn = nn.Conv2d(in_nc, in_nc, kernel_size=(1, 1)).requires_grad_(True)
 
-        self._init_weights()
-
-    def _init_weights(self, identity=True):
+    def init_weights(self, identity=True):
 
         for m in self.modules():
+            print("ftn", m)
             if isinstance(m, nn.Conv2d):
                 if identity:
                     weights = torch.Tensor([[1]])
@@ -81,6 +80,7 @@ class FTNBlock(nn.Module):
                     m.weight.data.normal_(0, (2 / (9.0 * 64)) ** 0.5)
 
     def forward(self, x):
+        # todo play with the bias? with the interpolation???????????
         input_filter = x
 
         # FTN Layer
@@ -91,4 +91,5 @@ class FTNBlock(nn.Module):
         y = self.conv3_ftn(x)
 
         # Weighted sum of both filters
+        # todo maybe return tuple with the bias parameters
         return (input_filter * (1 - self.alpha)) + (y * self.alpha)
