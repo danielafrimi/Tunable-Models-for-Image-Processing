@@ -5,6 +5,9 @@ import Data.Utils as Utils
 import random
 
 
+# we can use a much smaller training set for image denoising.
+# This is because denoising each pixel of an image can be seen as one regression problem
+
 class HRDataset(data.Dataset):
     """
     # Read LR images only in the test phase

@@ -10,7 +10,7 @@ from Utils import imshow
 path_dataset = '/Users/danielafrimi/Desktop/University/Lab_Vision/FTN/dataset/DIV2K_train_HR'
 
 
-trainset = HRDataset(noise_level=0.6, dataroot=path_dataset, crop=False)
+trainset = HRDataset(noise_level=0.2, dataroot=path_dataset, crop=False)
 trainloader = DataLoader(trainset, batch_size=1, shuffle=True)
 
 clean_image, noisy_image = next(iter(trainloader))
@@ -25,14 +25,22 @@ save_image(noisy_image, fp="noisy_image.jpeg")
 alpha_factors = [0, 0.2, 0.5, 0.8, 1]
 denoising_images = list()
 
-print("Done saving")
-for alpha in alpha_factors:
-    model = FTN_Resnet(alpha=alpha, num_layers=5)
-    model.load('denoising_model_model_FTN_RESNET_std_0.2_lr_0.001_batch_size_16_good.ckpt')
-    # Load model weights
-    denoised_image = model(noisy_image)
-    save_image(denoised_image, fp="check_{}.jpeg".format(alpha))
-    print("done with {}".format(alpha))
-    denoising_images.append(denoised_image)
+model = FTN_Resnet(alpha=0, num_layers=5)
+model.load('./FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_layer_{}_finetune_{}.ckpt'
+                    .format(0.2, 0.001, 16, 30, 5,False))
+
+denoised_image = model(noisy_image)
+save_image(denoised_image, fp="denoised_{}.jpeg".format(0))
+
+# for alpha in alpha_factors:
+#     model = FTN_Resnet(alpha=alpha, num_layers=5)
+#     # model.load('./FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_layer_{}_finetune_{}.ckpt'
+#     #                 .format(noise_std, self.lr, self.batch_size, 30, self.num_layers,
+#     #                         False))
+#     # Load model weights
+#     denoised_image = model(noisy_image)
+#     save_image(denoised_image, fp="check_{}.jpeg".format(alpha))
+#     print("done with {}".format(alpha))
+#     denoising_images.append(denoised_image)
 
     # todo save and plot

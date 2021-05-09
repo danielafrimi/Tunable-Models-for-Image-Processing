@@ -17,7 +17,7 @@ def parse_args():
 
     # opt
     p.add_argument('--batch_size', type=int, default=16)
-    p.add_argument('--lr', type=float, default=0.01)
+    p.add_argument('--lr', type=float, default=0.001)
     p.add_argument('--noise_std', type=float, default=0.2)
     p.add_argument('--data_path', type=str, default='/cs/labs/werman/daniel023/Lab_vision/FTN/dataset/DIV2K_train_HR')
     args = p.parse_args()
@@ -34,9 +34,9 @@ if __name__ == '__main__':
     if os.path.exists(args.log_dir):
         shutil.rmtree(args.log_dir)
 
-    path_dataset = '/Users/danielafrimi/Desktop/University/Lab_Vision/FTN/dataset/DIV2K_train_HR'
+    # path_dataset = '/Users/danielafrimi/Desktop/University/Lab_Vision/FTN/dataset/DIV2K_train_HR'
     # path_dataset = args.data_path
-    # path_dataset = '/cs/labs/werman/daniel023/Lab_vision/FTN/dataset/DIV2K_train_HR'
+    path_dataset = '/cs/labs/werman/daniel023/Lab_vision/FTN/dataset/DIV2K_train_HR'
 
     model = FTN_Resnet(alpha=1, num_layers=5)
     print("FTN RESNET Created with {} num layers on {} noise level ".format(model.num_layers, 0.6))
@@ -44,8 +44,8 @@ if __name__ == '__main__':
     del args.data_path
 
     # Finetune
-    trainset = HRDataset(noise_level=0.6, dataroot=path_dataset)
+    trainset = HRDataset(noise_level=0.5, dataroot=path_dataset)
     trainloader = DataLoader(trainset, batch_size=16, shuffle=True)
 
-    denoising_trainer = Trainer(trainloader, model=model, **args.__dict__, finetune=True, load=True, CUDA=False)
+    denoising_trainer = Trainer(trainloader, model=model, **args.__dict__, finetune=True, load=True, CUDA=True, num_layer=5)
     denoising_trainer.train()

@@ -66,7 +66,6 @@ class FTNBlock(nn.Module):
     def init_weights(self, identity=True):
 
         for m in self.modules():
-            print("ftn", m)
             if isinstance(m, nn.Conv2d):
                 if identity:
                     weights = torch.Tensor([[1]])

@@ -88,7 +88,6 @@ class FTN_Resnet(nn.Module):
 
     def _init_weights(self):
         for m in self.modules():
-            # print("res", m)
             if isinstance(m, nn.Conv2d):
                 m.weight.data.normal_(0, (2 / (9.0 * 64)) ** 0.5)
 
@@ -115,12 +114,13 @@ class FTN_Resnet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
+        identity = x
         x = self.conv1(x)
         for i in range(self.num_layers):
             kernel_weights = self.ftn_layers[i](self.kernels[i].kernel_parameters)
             x = self.blocks[i](x, kernel_weights)
 
-        return self.output(x)
+        return self.output(x) + identity
 
     def save(self, path):
         torch.save({'model_state_dict': self.state_dict()}, path)

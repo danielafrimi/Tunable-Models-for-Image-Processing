@@ -30,6 +30,7 @@ class Trainer:
         self.train_loader = train_loader
         self.lr = lr
         self.batch_size = batch_size
+
         self.num_epochs = 30 if not finetune else 50
 
         # run tensorboard --logdir=runs on terminal
@@ -37,7 +38,9 @@ class Trainer:
 
         if load:
             print("Loading network weights")
-            self.model.load('denoising_model_model_FTN_RESNET_std_0.2_lr_0.001_batch_size_16_good.ckpt')
+            self.model.load('./FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_layer_{}_finetune_{}.ckpt'
+                            .format(noise_std, self.lr, self.batch_size, 30, self.num_layers,
+                                   False))
             print("Loaded Succeed")
 
         num_devices = torch.cuda.device_count()
@@ -102,19 +105,20 @@ class Trainer:
                     # Saving checkpoint of the network
                     print("Saving network weights - denoising_model_FTN_RESNET_"
                           "std_{}_lr_{}_batch_size_{}_epochs_{}_layer_{}_finetune_{}" \
-                          .format(self.noise_std, self.lr, self.batch_size, self.num_epochs, self.num_layers, self.finetune))
+                          .format(self.noise_std, self.lr, self.batch_size, self.num_epochs, self.num_layers,
+                                  self.finetune))
 
                     self.model.save('./FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_layer_{}_finetune_{}.ckpt'
-                                    .format(self.noise_std, self.lr, self.batch_size, self.num_epochs,  self.num_layers, self.finetune))
+                                    .format(self.noise_std, self.lr, self.batch_size, self.num_epochs, self.num_layers,
+                                            self.finetune))
 
                     # Save images
-                    print("saving images batchsize{} lr{}.jpeg".format(self.batch_size, self.lr))
-                    save_image(make_grid(images), fp="images batchsize{} lr{}.jpeg"
-                               .format(self.batch_size, self.lr))
-                    save_image(make_grid(noisy_images), fp="noisy batchsize{} lr{}.jpeg"
-                               .format(self.batch_size, self.lr))
-                    save_image(make_grid(outputs), fp="denoising images batchsize{}_lr_{}_noise {}.jpeg"
-                               .format(self.batch_size, self.lr, self.noise_std))
+                    save_image(make_grid(images), fp="clean images batchsize{}_lr_{}_noise_{}_layers_{}.jpeg"
+                               .format(self.batch_size, self.lr, self.noise_std, self.num_layers))
+                    save_image(make_grid(noisy_images), fp="noisy images batchsize{}_lr_{}_noise_{}_layers_{}.jpeg"
+                               .format(self.batch_size, self.lr, self.noise_std, self.num_layers))
+                    save_image(make_grid(outputs), fp="denoising images batchsize{}_lr_{}_noise_{}_layers_{}.jpeg"
+                               .format(self.batch_size, self.lr, self.noise_std, self.num_layers))
 
                     loss_per_batch.append((running_loss / self.batch_size))
                     print(psnr(images, torch.clamp(outputs, min=0., max=1.)).data.cpu())
