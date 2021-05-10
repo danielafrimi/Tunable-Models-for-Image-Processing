@@ -40,9 +40,9 @@ if __name__ == '__main__':
     path_dataset = '/cs/labs/werman/daniel023/Lab_vision/FTN/dataset/DIV2K_train_HR'
 
     trainset = HRDataset(args.noise_std, dataroot=path_dataset)
-    trainloader = DataLoader(trainset, batch_size=32, shuffle=True)
+    trainloader = DataLoader(trainset, batch_size=16, shuffle=True)
 
-    model = FTN_Resnet(alpha=0, num_layers=10)
+    model = FTN_Resnet(alpha=0, num_layers=5)
 
     print("FTN_RESNET Created with {} layers on noise {}".format(model.num_layers, args.noise_std))
 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     # FIRST STEP
     denoising_trainer = Trainer(trainloader, model=model, **args.__dict__, finetune=False, load=False, CUDA=True,
-                                num_layer=10)
+                                num_layer=5)
     denoising_trainer.train()
 
 # TODO
