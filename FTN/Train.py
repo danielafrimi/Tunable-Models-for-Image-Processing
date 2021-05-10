@@ -39,8 +39,7 @@ class Trainer:
         if load:
             print("Loading network weights")
             self.model.load('./FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_layer_{}_finetune_{}.ckpt'
-                            .format(noise_std, self.lr, self.batch_size, 30, self.num_layers,
-                                   False))
+                            .format(0.1, 0.001, 16, 30, self.num_layers, False))
             print("Loaded Succeed")
 
         num_devices = torch.cuda.device_count()
@@ -134,6 +133,7 @@ class Trainer:
         print('Finished Training')
 
         plot_train_data(PSNR_per_batch, ["PSNR", 'Number of Mini-Batches'], name='psnr')
+        plot_train_data(loss_per_batch, ["Loss", 'Number of Mini-Batches'], name='loss')
 
         # Save the weights of the trained model
         print("Saving network weights - THE END")
