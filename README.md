@@ -25,8 +25,16 @@ Denoised Images During Training:
 </p>
 
 Test Image:
+<p align="center">
+<img src="FTN/results/clean_image.jpeg" alt="clean Images" width="50%"/>
+</p>
+<p align="center">
+<img src="FTN/results/denoised_0.jpeg" alt="Denoised Images" width="50%"/>
+</p>
 
-
+<p align="center">
+<img src="FTN/results/noisy_image.jpeg" alt="noisy Images" width="50%"/>
+</p>
 Notes: 
 1. After 20 epochs the loss not converging (gets an error of 0.03 on L1 loss).
 2. FTN layers initialized to identity (according to the paper).
@@ -85,7 +93,7 @@ FTN takes CNN filters as input (instead of image/feature map) and learns the tra
 
 
 <p align="center">
-<img src="readme_figures/ftn_flow.jpeg.png" alt="FTN Architecture" width="70%"/>
+<img src="readme_figures/ftn_flow.jpeg" alt="FTN Architecture" width="70%"/>
 </p>
 
 ### AdaFM - Modulating Image Restoration with Continual Levels via Adaptive Feature Modification Layers (CVPR 2019)
