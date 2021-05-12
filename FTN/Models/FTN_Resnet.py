@@ -67,8 +67,8 @@ class FTN_Resnet(nn.Module):
 
         self.num_layers = num_layers
 
-        self.conv1 = nn.Sequential(nn.Conv2d(in_channels=input_channels, out_channels=64,
-                                             kernel_size=3, stride=1, padding=1), nn.ReLU(inplace=True))
+        self.conv1_primary = nn.Sequential(nn.Conv2d(in_channels=input_channels, out_channels=64,
+                                                     kernel_size=3, stride=1, padding=1), nn.ReLU(inplace=True))
 
         self.ftn_layers = nn.ModuleList()
         for i in range(num_layers):
@@ -84,7 +84,7 @@ class FTN_Resnet(nn.Module):
 
         self._init_weights()
 
-        self.output = nn.Conv2d(in_channels=64, out_channels=input_channels, kernel_size=3, stride=1, padding=1)
+        self.conv2_primary = nn.Conv2d(in_channels=64, out_channels=input_channels, kernel_size=3, stride=1, padding=1)
 
     def _init_weights(self):
         for m in self.modules():
@@ -115,12 +115,12 @@ class FTN_Resnet(nn.Module):
 
     def forward(self, x):
         identity = x
-        x = self.conv1(x)
+        x = self.conv1_primary(x)
         for i in range(self.num_layers):
             kernel_weights = self.ftn_layers[i](self.kernels[i].kernel_parameters)
             x = self.blocks[i](x, kernel_weights)
 
-        return self.output(x) + identity
+        return self.conv2_primary(x) + identity
 
     def save(self, path):
         torch.save({'model_state_dict': self.state_dict()}, path)

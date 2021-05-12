@@ -35,9 +35,11 @@ Test Image:
 <p align="center">
 <img src="FTN/results/noisy_image.jpeg" alt="noisy Images" width="50%"/>
 </p>
-Notes: 
+
+###Notes 
 1. After 20 epochs the loss not converging (gets an error of 0.03 on L1 loss).
 2. FTN layers initialized to identity (according to the paper).
+3. The model has difficulty learning bigger noise  (#todo add an image of std 0.4 on 10 layers).
 
 
 ## 2nd Step
@@ -62,12 +64,15 @@ Denoised Images During Training:
 <img src="FTN/results/denoising%20images%20batchsize16_lr_0.001_noise_0.2_layers_5.jpeg" alt="Denoised Images" width="70%"/>
 </p>
 
+###Notes:
+- I think the model's architecture (resnet with blocks that contain filter, BN and relu) is not good enough, regardless of the number of layers of the model (I tried several layers and the difference is very negligible), it fails to bring good enough results in finetune. 
+  I have read about a number of articles and may have tried to implement the DcNN model but I am not sure it will meet the conditions.
+
+1. training first step on 0.1 std and finetuning the model on 0.5 std didnt work well. tha loss at start decreased.
+
 ### Interpolation
 
 
-
-- I think the model's architecture (resnet with blocks that contain filter, BN and relu) is not good enough, regardless of the number of layers of the model (I tried several layers and the difference is very negligible), it fails to bring good enough results in finetune. 
-  I have read about a number of articles and may have tried to implement the DcNN model but I am not sure it will meet the conditions.
 
 ## Introduction
 Deep convolutions neural network has demonstrated its capability of learning a deterministic mapping for the desired imagery effect. However, the large variety of user flavors motivates the possibility of continuous transition among different output effects.

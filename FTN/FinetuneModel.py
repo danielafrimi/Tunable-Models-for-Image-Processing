@@ -24,7 +24,7 @@ def parse_args():
     return args
 
 
-if __name__ == '__main__':
+def main():
     args = parse_args()
     run_name = 'lr_denoising_{}_noise_std_{}'.format(args.lr, args.noise_std)
     print("This is the run name {}".format(run_name))
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     path_dataset = '/cs/labs/werman/daniel023/Lab_vision/FTN/dataset/DIV2K_train_HR'
 
     model = FTN_Resnet(alpha=1, num_layers=5)
-    print("FTN RESNET Created with {} num layers on {} noise level ".format(model.num_layers, 0.6))
+    print("FTN RESNET Created with {} num layers on {} noise level ".format(model.num_layers, 0.5))
 
     del args.data_path
 
@@ -47,5 +47,10 @@ if __name__ == '__main__':
     trainset = HRDataset(noise_level=0.5, dataroot=path_dataset)
     trainloader = DataLoader(trainset, batch_size=16, shuffle=True)
 
-    denoising_trainer = Trainer(trainloader, model=model, **args.__dict__, finetune=True, load=True, CUDA=True, num_layer=5)
+    denoising_trainer = Trainer(trainloader, model=model, **args.__dict__, finetune=True, load=True, CUDA=True,
+                                num_layer=5)
     denoising_trainer.train()
+
+
+if __name__ == '__main__':
+    main()

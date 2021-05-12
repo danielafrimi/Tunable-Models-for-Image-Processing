@@ -6,7 +6,7 @@ import Models.Block as Block
 class DenoisingModel(nn.Module):
 
     def __init__(self, input_number_channels=3, output_number_channels=3, filters_number=64, blocks_number=5,
-                 norm_type='adafm', activaion_function_type='relu', res_scale=1):
+                 norm_type='basic', activaion_function_type='relu', res_scale=1):
         """
 
         :param input_number_channels: input number of channels
@@ -19,7 +19,6 @@ class DenoisingModel(nn.Module):
         :param upsample_mode:
         """
         super(DenoisingModel, self).__init__()
-
 
         norm_layer = Block.get_norm_layer(norm_type)
 
@@ -49,11 +48,26 @@ class DenoisingModel(nn.Module):
                                     act_type=activaion_function_type)
         HR_conv1 = Block.conv_block(filters_number, output_number_channels, kernel_size=3, norm_layer=None,
                                     act_type=None)
-
-        # self.shorcut_block = Block.ShortcutBlock(Block.sequential(*resnet_blocks, LR_conv))
+        self._init_weights()
 
         self.model = Block.sequential(fea_conv, Block.ShortcutBlock(Block.sequential(*resnet_blocks, LR_conv)),
                                       upsampler, HR_conv0, HR_conv1)
+
+    def _init_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                m.weight.data.normal_(0, (2 / (9.0 * 64)) ** 0.5)
+
+            if isinstance(m, nn.BatchNorm2d):
+                m.weight.data.normal_(0, (2 / (9.0 * 64)) ** 0.5)
+                clip_b = 0.025
+                w = m.weight.data.shape[0]
+                for j in range(w):
+                    if 0 <= m.weight.data[j] < clip_b:
+                        m.weight.data[j] = clip_b
+                    elif -clip_b < m.weight.data[j] < 0:
+                        m.weight.data[j] = -clip_b
+                m.running_var.fill_(0.01)
 
     def forward(self, x):
         return self.model(x)
