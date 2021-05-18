@@ -51,25 +51,37 @@ At first the loss didn't converge, but after the initialization of the ftn kerne
 Clean Images During Training:
 ###todo add the figure in a row as svg and the psnr
 
+Training on 0.2 noise          |  PSNR
+:-------------------------:|:-------------------------:
+![](readme_figures/noise0.2_firststep.png)  |  ![](readme_figures/psnr_0.2.svg)
+
 
 <p float="left">
-  <img src="readme_figures/noise0.2_firststep.png" width="100" />
-  <img src="readme_figures/psnr_0.2.svg" width="100" />
+  <img src="readme_figures/noise0.2_firststep.png" />
+  <img src="readme_figures/psnr_0.2.svg" />
 </p>
 
-<p align="center">
-<img src="readme_figures/noise0.2_firststep.png" alt="Clean Images" width="70%"/>
-</p>
+[comment]: <> (<p align="center">)
 
-Noisy Images During Training:
-<p align="center">
-<img src="FTN/results/noisy%20images%20batchsize16_lr_0.001_noise_0.2_layers_5.jpeg" alt="Noisy Images" width="70%"/>
-</p>
+[comment]: <> (<img src="readme_figures/noise0.2_firststep.png" alt="Clean Images" width="70%"/>)
 
-Denoised Images During Training:
-<p align="center">
-<img src="FTN/results/denoising%20images%20batchsize16_lr_0.001_noise_0.2_layers_5.jpeg" alt="Denoised Images" width="70%"/>
-</p>
+[comment]: <> (</p>)
+
+[comment]: <> (Noisy Images During Training:)
+
+[comment]: <> (<p align="center">)
+
+[comment]: <> (<img src="FTN/results/noisy%20images%20batchsize16_lr_0.001_noise_0.2_layers_5.jpeg" alt="Noisy Images" width="70%"/>)
+
+[comment]: <> (</p>)
+
+[comment]: <> (Denoised Images During Training:)
+
+[comment]: <> (<p align="center">)
+
+[comment]: <> (<img src="FTN/results/denoising%20images%20batchsize16_lr_0.001_noise_0.2_layers_5.jpeg" alt="Denoised Images" width="70%"/>)
+
+[comment]: <> (</p>)
 
 ###Notes:
 - I think the model's architecture (resnet with blocks that contain filter, BN and relu) is not good enough, regardless of the number of layers of the model (I tried several layers and the difference is very negligible), it fails to bring good enough results in finetune. 

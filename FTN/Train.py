@@ -130,12 +130,3 @@ class Trainer:
                         .format(self.noise_std, self.lr, self.batch_size, self.num_epochs, self.num_layers,
                                 self.finetune))
 
-    def _get_ftn_optimizers(self):
-        ftn_layers = self.model.get_ftn()
-        if self.GPU:
-            for ftn_layer in ftn_layers:
-                ftn_layer.to(self.device)
-
-        optimizers = [torch.optim.Adam(ftn_layer.parameters(), lr=self.lr, betas=(0.5, 0.999)) for ftn_layer in
-                      ftn_layers]
-        return optimizers
