@@ -1,4 +1,3 @@
-import logging
 
 import torch
 import torch.nn as nn
@@ -8,7 +7,6 @@ from torchvision.utils import make_grid, save_image
 from tqdm import tqdm
 
 from Utils import freeze_network_weights
-from Utils import plot_train_data
 
 
 class Trainer:
@@ -22,7 +20,7 @@ class Trainer:
         self.num_layers = config.layers
 
         # std of a Gaussian for noising the images
-        self.noise_std = config.noise_std if not finetune else 0.4
+        self.noise_std = config.noise_std
         self.finetune = finetune
 
         self.train_loader = train_loader
@@ -33,19 +31,11 @@ class Trainer:
 
         self.num_epochs = config.epochs
 
-        logger_file_name = "ftn_layers_{}_lr_{}_noisr_{}_epochs_{}_finetune_{}.log" \
-            .format(self.num_layers, self.lr, self.noise_std, self.num_epochs, self.finetune)
-        logging.basicConfig(filename=logger_file_name, level=logging.INFO, datefmt='%H:%M:%S')
-
-        self.logger = logging.getLogger('FTN')
-        fh = logging.FileHandler(logger_file_name, "w")
-        self.logger.addHandler(fh)
-
         if load:
-            self.logger.info("Loading network weights")
+            print("Loading network weights")
             self.model.load('./FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_layer_{}_finetune_{}.ckpt'
                             .format(0.2, 0.001, 16, 30, self.num_layers, False))
-            self.logger.info("Loaded Succeed")
+            print("Loaded Succeed")
 
         num_devices = torch.cuda.device_count()
         if num_devices > 1:
@@ -55,7 +45,7 @@ class Trainer:
             self.model = nn.DataParallel(self.model)
 
         if finetune:
-            self.logger.debug("Freezing Part of Model Weights")
+            print("Freezing Part of Model Weights")
             # print("Freezing Part of Model Weights")
             freeze_network_weights(self.model)
 
@@ -64,7 +54,6 @@ class Trainer:
         Train the model on the data in the data loader and save the weights of the model
         :return: None
         """
-        self.logger.info("Start Training with lr={}, batch_size={}".format(self.lr, self.batch_size))
         print("Start Training with lr={}, batch_size={}".format(self.lr, self.batch_size))
 
         # # Define the Optimizer and the loss function for the model
@@ -75,20 +64,16 @@ class Trainer:
 
         # ftn_optimizers = self._get_ftn_optimizers()
 
-        loss_per_batch = list()
-        PSNR_per_batch = list()
-
         self.model if not self.GPU else self.model.to(self.device)
 
-        for ftn_layer in self.model.self.model.get_ftn():
+        for ftn_layer in self.model.get_ftn():
             if self.GPU:
                 ftn_layer.to(self.device)
 
         # Train the model
         iter_number = 0
         for epoch in tqdm(range(self.num_epochs)):
-            self.logger.info("Epoch number: {}".format(epoch))
-            # print("Epoch number: {}".format(epoch))
+            print("Epoch number: {}".format(epoch))
             running_loss = 0.0
 
             for i, data in enumerate(self.train_loader, 0):
@@ -100,7 +85,6 @@ class Trainer:
                 # zero the parameter gradients
                 for optimizer in self.optimizers: optimizer.zero_grad()
 
-                # forward + backward + optimize
                 outputs = self.model(noisy_images)
 
                 # Calculating loss
@@ -112,6 +96,7 @@ class Trainer:
 
                 running_loss += loss.item()
                 iter_number += 1
+
                 if i % self.batch_size == self.batch_size - 1:
                     # Saving checkpoint of the network
                     print("Saving network weights - denoising_model_FTN_RESNET_"
@@ -128,16 +113,16 @@ class Trainer:
                                fp="images batchsize{}_lr_{}_noise_{}_layers_{}.jpeg"
                                .format(self.batch_size, self.lr, self.noise_std, self.num_layers))
 
-                    print(psnr(images, torch.clamp(outputs, min=0., max=1.)).data.cpu())
-
                     # The larger the value of PSNR, the more efficient is a corresponding compression or filter method
                     print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / self.batch_size))
+                    wandb.log({"images": [wandb.Image(make_grid(torch.cat([images, noisy_images, outputs])),
+                                                      caption="Denoising")]})
+
                     wandb.log({"PSNR": psnr(images, torch.clamp(outputs, min=0., max=1.)).data.cpu(),
                                "loss": float(running_loss / self.batch_size)}, step=iter_number)
 
                     running_loss = 0.0
 
-        self.logger.info('Finished Training')
         print('Finished Training')
 
         # Save the weights of the trained model

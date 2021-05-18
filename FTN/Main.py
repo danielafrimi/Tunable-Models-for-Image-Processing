@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 
 from Data.HRDataset import HRDataset
 from Models.FTN_Resnet import FTN_Resnet
+from torch.optim import lr_scheduler
 from Models.ResidualModel import DenoisingModel
 from Train import Trainer
 import wandb
@@ -29,12 +30,12 @@ def parse_args():
 
 
 def make(config):
-    path_dataset = '/Users/danielafrimi/Desktop/University/Lab_Vision/FTN/dataset/DIV2K_train_HR'
-    # path_dataset = '/cs/labs/werman/daniel023/Lab_vision/FTN/dataset/DIV2K_train_HR'
+    # path_dataset = '/Users/danielafrimi/Desktop/University/Lab_Vision/FTN/dataset/DIV2K_train_HR'
+    path_dataset = '/cs/labs/werman/daniel023/Lab_vision/FTN/dataset/DIV2K_train_HR'
 
     # Make the data
-    trainset = HRDataset(config.noise_std, dataroot=path_dataset)
-    train_loader = DataLoader(trainset, batch_size=config.batch_size, shuffle=True)
+    train_set = HRDataset(config.noise_std, dataroot=path_dataset)
+    train_loader = DataLoader(train_set, batch_size=config.batch_size, shuffle=True)
 
     model = FTN_Resnet(alpha=config.alpha, num_layers=config.layers)
     # model = DenoisingModel()
@@ -45,6 +46,9 @@ def make(config):
                   ftn_layers]
     # For the primary model
     optimizers.append(torch.optim.Adam(model.parameters(), lr=config.learning_rate, betas=(0.5, 0.999)))
+
+    # todo
+    # s = lr_scheduler.MultiStepLR(optimizer, milestones=500000, gamma=0.1)
 
     criterion = nn.L1Loss()
 
@@ -61,8 +65,8 @@ def model_pipeline(hyperparameters):
         model, train_loader, criterion, optimizers = make(config)
 
         # FIRST STEP
-        denoising_trainer = Trainer(train_loader=train_loader, model=model, finetune=False, load=False, CUDA=False,
-                                    criterion=criterion, optimizers=optimizers, config=config)
+        denoising_trainer = Trainer(train_loader=train_loader, model=model, finetune=config.finetune, load=config.load,
+                                    CUDA=config.CUDA, criterion=criterion, optimizers=optimizers, config=config)
         denoising_trainer.train()
 
 
@@ -72,13 +76,16 @@ def main():
     wandb.login()
 
     config = dict(
-        epochs=30,
-        layers=10,
+        epochs=60,
+        layers=7,
         batch_size=16,
         learning_rate=0.001,
         dataset="DIV2K",
-        noise_std=0.2,
-        alpha=0,
+        noise_std=0.5,
+        alpha=1,
+        finetune=True,
+        load=True,
+        CUDA=True,
         path_dataset='/Users/danielafrimi/Desktop/University/Lab_Vision/FTN/dataset/DIV2K_train_HR',
         architecture="FTN")
 

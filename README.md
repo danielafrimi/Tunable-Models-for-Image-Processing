@@ -49,9 +49,16 @@ the weights of the model (beside the FTN layers, which responsible to learn the 
 At first the loss didn't converge, but after the initialization of the ftn kernel as idenety and the bias to zero the error has converged to a certain limit (which in my opinion is not good enough).
 
 Clean Images During Training:
+###todo add the figure in a row as svg and the psnr
+
+
+<p float="left">
+  <img src="readme_figures/noise0.2_firststep.png" width="100" />
+  <img src="readme_figures/psnr_0.2.svg" width="100" />
+</p>
 
 <p align="center">
-<img src="FTN/results/clean%20images%20batchsize16_lr_0.001_noise_0.2_layers_5.jpeg" alt="Clean Images" width="70%"/>
+<img src="readme_figures/noise0.2_firststep.png" alt="Clean Images" width="70%"/>
 </p>
 
 Noisy Images During Training:
@@ -69,6 +76,13 @@ Denoised Images During Training:
   I have read about a number of articles and may have tried to implement the DcNN model but I am not sure it will meet the conditions.
 
 1. training first step on 0.1 std and finetuning the model on 0.5 std didnt work well. tha loss at start decreased.
+
+
+#### todo add how 16 layers acts for big noise 
+
+
+
+#### todo finetune add how it acts
 
 ### Interpolation
 

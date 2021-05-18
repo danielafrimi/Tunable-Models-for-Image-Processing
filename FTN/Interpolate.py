@@ -23,24 +23,21 @@ save_image(clean_image, fp="clean_image.jpeg")
 save_image(noisy_image, fp="noisy_image.jpeg")
 
 alpha_factors = [0, 0.2, 0.5, 0.8, 1]
-denoising_images = list()
 
 model = FTN_Resnet(alpha=0, num_layers=5)
 model.load('./FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_layer_{}_finetune_{}.ckpt'
                     .format(0.2, 0.001, 16, 30, 5,False))
 
 denoised_image = model(noisy_image)
-save_image(denoised_image, fp="denoised_{}.jpeg".format(0))
 
-# for alpha in alpha_factors:
-#     model = FTN_Resnet(alpha=alpha, num_layers=5)
-#     # model.load('./FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_layer_{}_finetune_{}.ckpt'
-#     #                 .format(noise_std, self.lr, self.batch_size, 30, self.num_layers,
-#     #                         False))
-#     # Load model weights
-#     denoised_image = model(noisy_image)
-#     save_image(denoised_image, fp="check_{}.jpeg".format(alpha))
-#     print("done with {}".format(alpha))
-#     denoising_images.append(denoised_image)
+for alpha in alpha_factors:
+    model = FTN_Resnet(alpha=alpha, num_layers=5)
+    # model.load('./FTN_RESNET_std_{}_lr_{}_batch_size_{}_epochs_{}_layer_{}_finetune_{}.ckpt'
+    #                 .format(noise_std, self.lr, self.batch_size, 30, self.num_layers,
+    #                         False))
+    # Load model weights
+    denoised_image = model(noisy_image)
+    save_image(denoised_image, fp="check_{}.jpeg".format(alpha))
+    print("done with {}".format(alpha))
 
-    # todo save and plot
+
