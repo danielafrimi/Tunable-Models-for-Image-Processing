@@ -74,7 +74,7 @@ but does not maintain the sharpness of the original images.
 
 [comment]: <> (</p>)
 
-Test Image:
+Test Image on 0.2 std noise:
 <p align="center">
 <img src="FTN/results/clean_image.jpeg" alt="clean Images" width="50%"/>
 </p>
@@ -101,6 +101,23 @@ At first the loss didn't converge, but after the initialization of the ftn kerne
 Clean Images During Training:
 ###todo add the figure in a row as svg and the psnr
 
+<p align="center">
+
+<img src="readme_figures/finetune_0.5_7_layers.png" alt="Denoising" width="70%"/>
+
+</p>
+
+<p align="center">
+
+<img src="readme_figures/finetune_0.5_7_layers_psnr.png" alt="PSNR" width="70%"/>
+
+</p>
+
+<p align="center">
+
+<img src="readme_figures/finetune_0.5_7_layers_loss.png" alt="LOSS" width="70%"/>
+
+</p>
 
 
 ###Notes:
@@ -110,11 +127,11 @@ Clean Images During Training:
 1. training first step on 0.1 std and finetuning the model on 0.5 std didnt work well. tha loss at start decreased.
 
 
-
-
-#### todo finetune add how it acts
-
 ### Interpolation
+
+
+
+
 
 
 
