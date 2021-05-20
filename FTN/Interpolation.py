@@ -54,9 +54,7 @@ with wandb.init(project="pytorch-demo", config=config):
         batch_tensors = torch.cat([clean_image, noisy_image, denoised_image])
         denoising_images_per_alpha.append(batch_tensors)
 
-        wandb.log({"images_{}".format(i): [wandb.Image(make_grid(batch_tensors), caption="alpha_{}".format(alpha))]
+        wandb.log({"images_{}".format(i): [wandb.Image(make_grid(batch_tensors), caption="alpha_{}".format(alpha))]})
 
-                   })
-
-        print(i)
-        wandb.log({"PSNR": psnr(clean_image, torch.clamp(denoised_image, min=0., max=1.)).data.cpu()}, step=i + 1)
+        wandb.log({"PSNR": psnr(clean_image, torch.clamp(denoised_image, min=0., max=1.)).data.cpu()}, step=i+1)
+        print(psnr(clean_image, torch.clamp(denoised_image, min=0., max=1.)).data.cpu())

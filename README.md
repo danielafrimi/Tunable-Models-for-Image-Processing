@@ -98,8 +98,7 @@ Finetune the model on Gaussian noise with std equal to [0.5, 0.6], alpha=1 while
 the weights of the model (beside the FTN layers, which responsible to learn the transition between the kernels on each noise),
 At first the loss didn't converge, but after the initialization of the ftn kernel as idenety and the bias to zero the error has converged to a certain limit (which in my opinion is not good enough).
 
-Clean Images During Training:
-###todo add the figure in a row as svg and the psnr
+Results during Finetune the model on 0.5 std noise:
 
 <p align="center">
 
@@ -129,7 +128,7 @@ Clean Images During Training:
 
 ### Interpolation
 
-
+in wandb - to add it
 
 
 
