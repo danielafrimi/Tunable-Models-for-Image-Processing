@@ -76,10 +76,10 @@ def main():
     wandb.login()
 
     config = dict(
-        epochs=60,
+        epochs=30,
         layers=7,
         batch_size=16,
-        learning_rate=0.001,
+        learning_rate=0.01,
         dataset="DIV2K",
         noise_std=0.5,
         alpha=1,
@@ -94,6 +94,7 @@ def main():
 
 # TODO
 #  6. lr scheulder
+#  7. loguru.logger
 
 
 if __name__ == '__main__':

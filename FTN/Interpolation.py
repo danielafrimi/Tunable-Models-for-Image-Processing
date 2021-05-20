@@ -14,7 +14,6 @@ alpha_factors = [0, 0.2, 0.3, 0.4, 0.6, 0.8, 1]
 # todo take an image with noise 0.5 and see how with alpha=0 works and alpha=1 (for checking how ftn)
 
 
-
 config = dict(
     epochs=30,
     layers=7,
@@ -42,7 +41,6 @@ with wandb.init(project="pytorch-demo", config=config):
     trainloader = DataLoader(trainset, batch_size=config.batch_size, shuffle=True)
 
     clean_image, noisy_image = next(iter(trainloader))
-    # denoising_images = np.zeros((len(alpha_factors), 48, 3, 96, 96))
     denoising_images_per_alpha = list()
 
     for i, alpha in enumerate(alpha_factors):
@@ -55,19 +53,10 @@ with wandb.init(project="pytorch-demo", config=config):
 
         batch_tensors = torch.cat([clean_image, noisy_image, denoised_image])
         denoising_images_per_alpha.append(batch_tensors)
-        # denoising_images[i * 16:] = batch_tensors.detach().numpy()
-        # torch.cat((batch_tensors, batch_tensors))
-        print("Hi")
+
         wandb.log({"images_{}".format(i): [wandb.Image(make_grid(batch_tensors), caption="alpha_{}".format(alpha))]
 
                    })
 
         print(i)
-        wandb.log({"PSNR": psnr(clean_image, torch.clamp(denoised_image, min=0., max=1.)).data.cpu()}, step=i+1)
-
-    # wandb.log({"images": [wandb.Image(denoising_images_per_alpha[0], caption="alpha_{}".format(alpha_factors[0]))],
-    #            "im1":[wandb.Image(denoising_images_per_alpha[1], caption="alpha_{}".format(alpha_factors[1]))],
-               # "im2": [wandb.Image(denoising_images_per_alpha[2], caption="alpha_{}".format(alpha_factors[2]))],
-               # "im3": [wandb.Image(denoising_images_per_alpha[3], caption="alpha_{}".format(alpha_factors[3]))],
-
-               # })
+        wandb.log({"PSNR": psnr(clean_image, torch.clamp(denoised_image, min=0., max=1.)).data.cpu()}, step=i + 1)

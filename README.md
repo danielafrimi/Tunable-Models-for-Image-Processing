@@ -57,31 +57,32 @@ Training on 0.2 noise          |  PSNR
 
 
 <p float="left">
+
   <img src="readme_figures/noise0.2_firststep.png" />
-  <img src="readme_figures/psnr_0.2.svg" />
+
+  <img src="readme_figures/psnr_0.2.png" />
+
 </p>
 
-[comment]: <> (<p align="center">)
+<p align="center">
 
-[comment]: <> (<img src="readme_figures/noise0.2_firststep.png" alt="Clean Images" width="70%"/>)
+<img src="readme_figures/noise0.2_firststep.png" alt="Denoising" width="70%"/>
 
-[comment]: <> (</p>)
+</p>
 
-[comment]: <> (Noisy Images During Training:)
 
-[comment]: <> (<p align="center">)
 
-[comment]: <> (<img src="FTN/results/noisy%20images%20batchsize16_lr_0.001_noise_0.2_layers_5.jpeg" alt="Noisy Images" width="70%"/>)
 
-[comment]: <> (</p>)
 
-[comment]: <> (Denoised Images During Training:)
+It can be seen that with the architecture of the model on 16 layers, the model tries to clear a noise of 0.4, 
+but does not maintain the sharpness of the original images.
 
-[comment]: <> (<p align="center">)
+<p align="center">
 
-[comment]: <> (<img src="FTN/results/denoising%20images%20batchsize16_lr_0.001_noise_0.2_layers_5.jpeg" alt="Denoised Images" width="70%"/>)
+<img src="readme_figures/images_16_layers_noise0.4_.png" alt="16 Layers on 0.4 std noise" width="70%"/>
 
-[comment]: <> (</p>)
+</p>
+
 
 ###Notes:
 - I think the model's architecture (resnet with blocks that contain filter, BN and relu) is not good enough, regardless of the number of layers of the model (I tried several layers and the difference is very negligible), it fails to bring good enough results in finetune. 
@@ -89,8 +90,6 @@ Training on 0.2 noise          |  PSNR
 
 1. training first step on 0.1 std and finetuning the model on 0.5 std didnt work well. tha loss at start decreased.
 
-
-#### todo add how 16 layers acts for big noise 
 
 
 
