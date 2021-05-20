@@ -10,19 +10,31 @@ the results were the same to the basic model (PSNR 27-28).
 
 
 
-<p float="left">
+[comment]: <> (<p float="left">)
 
-  <img src="readme_figures/noise0.2_firststep.png" width="200" />
+[comment]: <> (  <img src="readme_figures/noise0.2_firststep.png" width="200" />)
 
-  <img src="readme_figures/psnr_0.2.png" width="200" />
+[comment]: <> (  <img src="readme_figures/psnr_0.2.png" width="200" />)
 
-  <img src="readme_figures/loss_0.2noise_first_step.png.png" width="200"/>
+[comment]: <> (  <img src="readme_figures/loss_0.2noise_first_step.png" width="200"/>)
+
+[comment]: <> (</p>)
+
+<p align="center">
+
+<img src="readme_figures/noise0.2_firststep.png" alt="Denoising" width="70%"/>
 
 </p>
 
 <p align="center">
 
-<img src="readme_figures/noise0.2_firststep.png" alt="Denoising" width="70%"/>
+<img src="readme_figures/psnr_0.2.png" alt="PSNR" width="70%"/>
+
+</p>
+
+<p align="center">
+
+<img src="readme_figures/loss_0.2noise_first_step.png" alt="PSNR" width="70%"/>
 
 </p>
 
