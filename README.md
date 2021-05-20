@@ -8,21 +8,63 @@ added a Gaussian noise with std equal to 0.2 to each image.
 I've added the ftn layer after each filter, In the first training alpha=0 (we dont learn the ftn blocks beacuse the gradient is 0).
 the results were the same to the basic model (PSNR 27-28).
 
-Clean Images During Training:
-
-<p align="center">
-<img src="FTN/results/clean%20images%20batchsize16_lr_0.001_noise_0.2_layers_5.jpeg" alt="Clean Images" width="70%"/>
+<p float="left">
+  <img src="/img1.png" width="100" />
+  <img src="/img2.png" width="100" /> 
+  <img src="/img3.png" width="100" />
 </p>
 
-Noisy Images During Training:
-<p align="center">
-<img src="FTN/results/noisy%20images%20batchsize16_lr_0.001_noise_0.2_layers_5.jpeg" alt="Noisy Images" width="70%"/>
+<p float="left">
+
+  <img src="readme_figures/noise0.2_firststep.png" width="100" />
+
+  <img src="readme_figures/psnr_0.2.png" width="100" />
+
+  <img src="readme_figures/loss_0.2noise_first_step.png.png" width="100" />
+
 </p>
 
-Denoised Images During Training:
 <p align="center">
-<img src="FTN/results/denoising%20images%20batchsize16_lr_0.001_noise_0.2_layers_5.jpeg" alt="Denoised Images" width="70%"/>
+
+<img src="readme_figures/noise0.2_firststep.png" alt="Denoising" width="70%"/>
+
 </p>
+
+
+
+It can be seen that with the architecture of the model on 16 layers, the model tries to clear a noise of 0.4, 
+but does not maintain the sharpness of the original images.
+
+<p align="center">
+
+<img src="readme_figures/images_16_layers_noise0.4_.png" alt="16 Layers on 0.4 std noise" width="70%"/>
+
+</p>
+
+
+[comment]: <> (Clean Images During Training:)
+
+[comment]: <> (<p align="center">)
+
+[comment]: <> (<img src="FTN/results/clean%20images%20batchsize16_lr_0.001_noise_0.2_layers_5.jpeg" alt="Clean Images" width="70%"/>)
+
+[comment]: <> (</p>)
+
+[comment]: <> (Noisy Images During Training:)
+
+[comment]: <> (<p align="center">)
+
+[comment]: <> (<img src="FTN/results/noisy%20images%20batchsize16_lr_0.001_noise_0.2_layers_5.jpeg" alt="Noisy Images" width="70%"/>)
+
+[comment]: <> (</p>)
+
+[comment]: <> (Denoised Images During Training:)
+
+[comment]: <> (<p align="center">)
+
+[comment]: <> (<img src="FTN/results/denoising%20images%20batchsize16_lr_0.001_noise_0.2_layers_5.jpeg" alt="Denoised Images" width="70%"/>)
+
+[comment]: <> (</p>)
 
 Test Image:
 <p align="center">
@@ -51,37 +93,6 @@ At first the loss didn't converge, but after the initialization of the ftn kerne
 Clean Images During Training:
 ###todo add the figure in a row as svg and the psnr
 
-Training on 0.2 noise          |  PSNR
-:-------------------------:|:-------------------------:
-![](readme_figures/noise0.2_firststep.png)  |  ![](readme_figures/psnr_0.2.svg)
-
-
-<p float="left">
-
-  <img src="readme_figures/noise0.2_firststep.png" />
-
-  <img src="readme_figures/psnr_0.2.png" />
-
-</p>
-
-<p align="center">
-
-<img src="readme_figures/noise0.2_firststep.png" alt="Denoising" width="70%"/>
-
-</p>
-
-
-
-
-
-It can be seen that with the architecture of the model on 16 layers, the model tries to clear a noise of 0.4, 
-but does not maintain the sharpness of the original images.
-
-<p align="center">
-
-<img src="readme_figures/images_16_layers_noise0.4_.png" alt="16 Layers on 0.4 std noise" width="70%"/>
-
-</p>
 
 
 ###Notes:
