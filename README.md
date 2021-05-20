@@ -8,19 +8,15 @@ added a Gaussian noise with std equal to 0.2 to each image.
 I've added the ftn layer after each filter, In the first training alpha=0 (we dont learn the ftn blocks beacuse the gradient is 0).
 the results were the same to the basic model (PSNR 27-28).
 
-<p float="left">
-  <img src="/img1.png" width="100" />
-  <img src="/img2.png" width="100" /> 
-  <img src="/img3.png" width="100" />
-</p>
+
 
 <p float="left">
 
-  <img src="readme_figures/noise0.2_firststep.png" width="100" />
+  <img src="readme_figures/noise0.2_firststep.png" width="200" />
 
-  <img src="readme_figures/psnr_0.2.png" width="100" />
+  <img src="readme_figures/psnr_0.2.png" width="200" />
 
-  <img src="readme_figures/loss_0.2noise_first_step.png.png" width="100" />
+  <img src="readme_figures/loss_0.2noise_first_step.png.png" width="200"/>
 
 </p>
 
