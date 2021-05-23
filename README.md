@@ -200,14 +200,23 @@ In the image below it can be seen that the filters for different types of noise 
 <img src="readme_figures/filters_dni.jpeg" alt="DNI Filters" width="70%"/>
 </p>
 
+### Perceptual Losses for Real-Time Style Transfer and Super-Resolution
+
+- [paper](https://arxiv.org/pdf/1603.08155.pdf)
+- [code](todo)
+
+In this paper they combined the benefits of a CNN for image transformation tasks (train in a supervised manner), 
+and the benefit of perceptual loss functions based not on differences between pixels but instead on differences between high-level image feature representations extracted
+from pretrained convolutional neural networks.
+
+training feedforward transformation networks for image transformation tasks, but rather than
+using per-pixel loss functions depending only on low-level pixel information, 
+train the networks using perceptual loss functions that depend on high-level
+features from a pretrained loss network. 
 
 
 
+<p align="center">
+<img src="readme_figures/filters_dni.jpeg" alt="DNI Filters" width="70%"/>
+</p>
 
-
-
-1.  הfinetune להראות החלקה של 
-2. להראות החלקה של תמונה עם רעש 0.2
-3. להראות את הloss בזמן הfinetune
-4.  ולהראות תוצאות לחשב אינטפולציה
-5. fix psnr
