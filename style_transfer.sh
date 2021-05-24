@@ -5,7 +5,7 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --gres=gpu:1,vmem:3g
 #SBATCH --killable
-#SBATCH --mem=3g
+#SBATCH --mem=5g
 #SBATCH --time=7-0
 #SBATCH -c2
 #SBATCH --output=/cs/labs/werman/daniel023/Lab_vision/model_logs/sbatch_%J.out
