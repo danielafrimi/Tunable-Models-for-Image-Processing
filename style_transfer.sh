@@ -3,7 +3,7 @@
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-type=FAIL
-#SBATCH --gres=gpu:1,vmem:3g
+#SBATCH --gres=gpu:1,vmem:7g
 #SBATCH --killable
 #SBATCH --mem=5g
 #SBATCH --time=7-0
