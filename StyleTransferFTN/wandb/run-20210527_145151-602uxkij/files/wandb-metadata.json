@@ -1,0 +1,24 @@
+{
+    "os": "macOS-10.16-x86_64-i386-64bit",
+    "python": "3.8.5",
+    "heartbeatAt": "2021-05-27T11:51:54.058951",
+    "startedAt": "2021-05-27T11:51:51.790475",
+    "docker": null,
+    "cpu_count": 8,
+    "cuda": null,
+    "args": [
+        "train"
+    ],
+    "state": "running",
+    "program": "/Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/style_ftn.py",
+    "codePath": "StyleTransferFTN/style_ftn.py",
+    "git": {
+        "remote": "https://github.com/danielafrimi/Lab.git",
+        "commit": "3f9e29c084538b53437a44e908c2f29f58ce7dc2"
+    },
+    "email": "danielafrimi8@gmail.com",
+    "root": "/Users/danielafrimi/Desktop/University/Lab_Vision",
+    "host": "huji-132-64-29-181.xt.huji.ac.il",
+    "username": "danielafrimi",
+    "executable": "/opt/homebrew/Caskroom/miniconda/base/envs/lab/bin/python"
+}

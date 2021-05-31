@@ -1,0 +1,165 @@
+2021-05-27 14:55:46,264 INFO    MainThread:4503 [internal.py:wandb_internal():88] W&B internal server running at pid: 4503, started at: 2021-05-27 14:55:46.264243
+2021-05-27 14:55:46,265 INFO    WriterThread:4503 [datastore.py:open_for_write():77] open: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/run-m4op3ipf.wandb
+2021-05-27 14:55:46,265 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: check_version
+2021-05-27 14:55:46,266 DEBUG   SenderThread:4503 [sender.py:send():176] send: header
+2021-05-27 14:55:46,266 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: check_version
+2021-05-27 14:55:46,636 DEBUG   SenderThread:4503 [sender.py:send():176] send: run
+2021-05-27 14:55:47,266 INFO    SenderThread:4503 [dir_watcher.py:__init__():168] watching files in: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files
+2021-05-27 14:55:47,266 INFO    SenderThread:4503 [sender.py:_start_run_threads():696] run started: m4op3ipf with start time 1622116545
+2021-05-27 14:55:47,267 DEBUG   SenderThread:4503 [sender.py:send():176] send: summary
+2021-05-27 14:55:47,267 INFO    SenderThread:4503 [sender.py:_save_file():821] saving file wandb-summary.json with policy end
+2021-05-27 14:55:47,267 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: run_start
+2021-05-27 14:55:47,270 DEBUG   HandlerThread:4503 [meta.py:__init__():39] meta init
+2021-05-27 14:55:47,271 DEBUG   HandlerThread:4503 [meta.py:__init__():53] meta init done
+2021-05-27 14:55:47,271 DEBUG   HandlerThread:4503 [meta.py:probe():210] probe
+2021-05-27 14:55:47,272 DEBUG   HandlerThread:4503 [meta.py:_setup_git():200] setup git
+2021-05-27 14:55:47,294 DEBUG   HandlerThread:4503 [meta.py:_setup_git():207] setup git done
+2021-05-27 14:55:47,294 DEBUG   HandlerThread:4503 [meta.py:_save_pip():57] save pip
+2021-05-27 14:55:47,294 DEBUG   HandlerThread:4503 [meta.py:_save_pip():71] save pip done
+2021-05-27 14:55:47,295 DEBUG   HandlerThread:4503 [meta.py:_save_conda():78] save conda
+2021-05-27 14:55:48,273 INFO    Thread-8  :4503 [dir_watcher.py:_on_file_created():216] file/dir created: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/wandb-summary.json
+2021-05-27 14:55:48,273 INFO    Thread-8  :4503 [dir_watcher.py:_on_file_created():216] file/dir created: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/requirements.txt
+2021-05-27 14:55:48,273 INFO    Thread-8  :4503 [dir_watcher.py:_on_file_created():216] file/dir created: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/conda-environment.yaml
+2021-05-27 14:55:50,018 DEBUG   HandlerThread:4503 [meta.py:_save_conda():86] save conda done
+2021-05-27 14:55:50,018 DEBUG   HandlerThread:4503 [meta.py:probe():252] probe done
+2021-05-27 14:55:50,041 DEBUG   SenderThread:4503 [sender.py:send():176] send: files
+2021-05-27 14:55:50,041 INFO    SenderThread:4503 [sender.py:_save_file():821] saving file wandb-metadata.json with policy now
+2021-05-27 14:55:50,044 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: stop_status
+2021-05-27 14:55:50,045 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: stop_status
+2021-05-27 14:55:50,279 INFO    Thread-8  :4503 [dir_watcher.py:_on_file_modified():229] file/dir modified: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/conda-environment.yaml
+2021-05-27 14:55:50,279 INFO    Thread-8  :4503 [dir_watcher.py:_on_file_created():216] file/dir created: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/wandb-metadata.json
+2021-05-27 14:55:50,279 INFO    Thread-8  :4503 [dir_watcher.py:_on_file_created():216] file/dir created: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/output.log
+2021-05-27 14:55:51,383 INFO    Thread-11 :4503 [upload_job.py:push():133] Uploaded file /var/folders/1d/lvvkpnqj6c7bzf65w4y0mp4w0000gn/T/tmptl2hevqbwandb/iz2lztil-wandb-metadata.json
+2021-05-27 14:56:05,514 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: stop_status
+2021-05-27 14:56:05,515 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: stop_status
+2021-05-27 14:56:16,344 DEBUG   SenderThread:4503 [sender.py:send():176] send: stats
+2021-05-27 14:56:20,949 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: stop_status
+2021-05-27 14:56:20,949 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: stop_status
+2021-05-27 14:56:36,476 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: stop_status
+2021-05-27 14:56:36,476 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: stop_status
+2021-05-27 14:56:47,791 DEBUG   SenderThread:4503 [sender.py:send():176] send: stats
+2021-05-27 14:56:52,054 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: stop_status
+2021-05-27 14:56:52,054 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: stop_status
+2021-05-27 14:57:07,916 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: stop_status
+2021-05-27 14:57:07,917 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: stop_status
+2021-05-27 14:57:14,948 DEBUG   SenderThread:4503 [sender.py:send():176] send: telemetry
+2021-05-27 14:57:14,949 DEBUG   SenderThread:4503 [sender.py:send():176] send: exit
+2021-05-27 14:57:14,949 INFO    SenderThread:4503 [sender.py:send_exit():281] handling exit code: 1
+2021-05-27 14:57:14,950 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:14,950 INFO    SenderThread:4503 [sender.py:send_exit():289] send defer
+2021-05-27 14:57:14,950 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:14,951 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: defer
+2021-05-27 14:57:14,951 INFO    HandlerThread:4503 [handler.py:handle_request_defer():138] handle defer: 0
+2021-05-27 14:57:14,951 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: defer
+2021-05-27 14:57:14,951 INFO    SenderThread:4503 [sender.py:send_request_defer():298] handle sender defer: 0
+2021-05-27 14:57:14,951 INFO    SenderThread:4503 [sender.py:send_request_defer():336] send defer: 1
+2021-05-27 14:57:14,952 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: defer
+2021-05-27 14:57:14,952 INFO    HandlerThread:4503 [handler.py:handle_request_defer():138] handle defer: 1
+2021-05-27 14:57:15,016 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: defer
+2021-05-27 14:57:15,016 INFO    SenderThread:4503 [sender.py:send_request_defer():298] handle sender defer: 1
+2021-05-27 14:57:15,017 INFO    SenderThread:4503 [sender.py:send_request_defer():336] send defer: 2
+2021-05-27 14:57:15,017 DEBUG   SenderThread:4503 [sender.py:send():176] send: stats
+2021-05-27 14:57:15,017 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: defer
+2021-05-27 14:57:15,020 INFO    HandlerThread:4503 [handler.py:handle_request_defer():138] handle defer: 2
+2021-05-27 14:57:15,020 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: defer
+2021-05-27 14:57:15,021 INFO    SenderThread:4503 [sender.py:send_request_defer():298] handle sender defer: 2
+2021-05-27 14:57:15,021 INFO    SenderThread:4503 [sender.py:send_request_defer():336] send defer: 3
+2021-05-27 14:57:15,023 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: defer
+2021-05-27 14:57:15,023 INFO    HandlerThread:4503 [handler.py:handle_request_defer():138] handle defer: 3
+2021-05-27 14:57:15,024 DEBUG   SenderThread:4503 [sender.py:send():176] send: summary
+2021-05-27 14:57:15,025 INFO    SenderThread:4503 [sender.py:_save_file():821] saving file wandb-summary.json with policy end
+2021-05-27 14:57:15,025 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: defer
+2021-05-27 14:57:15,025 INFO    SenderThread:4503 [sender.py:send_request_defer():298] handle sender defer: 3
+2021-05-27 14:57:15,025 INFO    SenderThread:4503 [sender.py:send_request_defer():336] send defer: 4
+2021-05-27 14:57:15,025 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: defer
+2021-05-27 14:57:15,025 INFO    HandlerThread:4503 [handler.py:handle_request_defer():138] handle defer: 4
+2021-05-27 14:57:15,026 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: defer
+2021-05-27 14:57:15,026 INFO    SenderThread:4503 [sender.py:send_request_defer():298] handle sender defer: 4
+2021-05-27 14:57:15,057 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:15,452 INFO    SenderThread:4503 [sender.py:send_request_defer():336] send defer: 5
+2021-05-27 14:57:15,453 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:15,453 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: defer
+2021-05-27 14:57:15,453 INFO    HandlerThread:4503 [handler.py:handle_request_defer():138] handle defer: 5
+2021-05-27 14:57:15,454 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: defer
+2021-05-27 14:57:15,454 INFO    SenderThread:4503 [sender.py:send_request_defer():298] handle sender defer: 5
+2021-05-27 14:57:15,454 INFO    SenderThread:4503 [dir_watcher.py:finish():282] shutting down directory watcher
+2021-05-27 14:57:15,561 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:15,640 INFO    SenderThread:4503 [dir_watcher.py:_on_file_modified():229] file/dir modified: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/wandb-summary.json
+2021-05-27 14:57:15,641 INFO    SenderThread:4503 [dir_watcher.py:_on_file_modified():229] file/dir modified: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/output.log
+2021-05-27 14:57:15,642 INFO    SenderThread:4503 [dir_watcher.py:_on_file_modified():229] file/dir modified: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/config.yaml
+2021-05-27 14:57:15,643 INFO    SenderThread:4503 [dir_watcher.py:finish():312] scan: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files
+2021-05-27 14:57:15,643 INFO    SenderThread:4503 [dir_watcher.py:finish():318] scan save: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/requirements.txt requirements.txt
+2021-05-27 14:57:15,644 INFO    SenderThread:4503 [dir_watcher.py:finish():318] scan save: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/output.log output.log
+2021-05-27 14:57:15,645 INFO    SenderThread:4503 [dir_watcher.py:finish():318] scan save: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/config.yaml config.yaml
+2021-05-27 14:57:15,655 INFO    SenderThread:4503 [dir_watcher.py:finish():318] scan save: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/wandb-summary.json wandb-summary.json
+2021-05-27 14:57:15,660 INFO    SenderThread:4503 [dir_watcher.py:finish():318] scan save: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/conda-environment.yaml conda-environment.yaml
+2021-05-27 14:57:15,661 INFO    SenderThread:4503 [dir_watcher.py:finish():318] scan save: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/wandb-metadata.json wandb-metadata.json
+2021-05-27 14:57:15,664 INFO    SenderThread:4503 [sender.py:send_request_defer():336] send defer: 6
+2021-05-27 14:57:15,665 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:15,666 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: defer
+2021-05-27 14:57:15,666 INFO    HandlerThread:4503 [handler.py:handle_request_defer():138] handle defer: 6
+2021-05-27 14:57:15,667 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: defer
+2021-05-27 14:57:15,671 INFO    SenderThread:4503 [sender.py:send_request_defer():298] handle sender defer: 6
+2021-05-27 14:57:15,671 INFO    SenderThread:4503 [file_pusher.py:finish():176] shutting down file pusher
+2021-05-27 14:57:15,672 INFO    SenderThread:4503 [sender.py:send_request_defer():336] send defer: 7
+2021-05-27 14:57:15,672 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: defer
+2021-05-27 14:57:15,673 INFO    HandlerThread:4503 [handler.py:handle_request_defer():138] handle defer: 7
+2021-05-27 14:57:15,673 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: defer
+2021-05-27 14:57:15,673 INFO    SenderThread:4503 [sender.py:send_request_defer():298] handle sender defer: 7
+2021-05-27 14:57:15,772 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:16,102 INFO    SenderThread:4503 [sender.py:send_request_defer():336] send defer: 8
+2021-05-27 14:57:16,103 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:16,103 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: defer
+2021-05-27 14:57:16,103 INFO    HandlerThread:4503 [handler.py:handle_request_defer():138] handle defer: 8
+2021-05-27 14:57:16,103 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: defer
+2021-05-27 14:57:16,104 INFO    SenderThread:4503 [sender.py:send_request_defer():298] handle sender defer: 8
+2021-05-27 14:57:16,104 INFO    SenderThread:4503 [sender.py:send_request_defer():336] send defer: 9
+2021-05-27 14:57:16,104 DEBUG   SenderThread:4503 [sender.py:send():176] send: final
+2021-05-27 14:57:16,104 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: defer
+2021-05-27 14:57:16,104 DEBUG   SenderThread:4503 [sender.py:send():176] send: footer
+2021-05-27 14:57:16,104 INFO    HandlerThread:4503 [handler.py:handle_request_defer():138] handle defer: 9
+2021-05-27 14:57:16,105 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: defer
+2021-05-27 14:57:16,105 INFO    SenderThread:4503 [sender.py:send_request_defer():298] handle sender defer: 9
+2021-05-27 14:57:16,210 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:16,211 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:16,315 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:16,315 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:16,422 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:16,423 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:16,527 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:16,528 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:16,637 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:16,637 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:16,739 INFO    Thread-15 :4503 [upload_job.py:push():133] Uploaded file /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/wandb-summary.json
+2021-05-27 14:57:16,744 INFO    Thread-14 :4503 [upload_job.py:push():133] Uploaded file /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/config.yaml
+2021-05-27 14:57:16,744 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:16,745 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:16,852 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:16,852 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:16,869 INFO    Thread-16 :4503 [upload_job.py:push():133] Uploaded file /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/conda-environment.yaml
+2021-05-27 14:57:16,958 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:16,958 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:17,068 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:17,068 INFO    Thread-13 :4503 [upload_job.py:push():133] Uploaded file /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/output.log
+2021-05-27 14:57:17,069 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:17,176 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:17,177 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:17,286 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:17,287 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:17,326 INFO    Thread-12 :4503 [upload_job.py:push():133] Uploaded file /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/files/requirements.txt
+2021-05-27 14:57:17,393 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:17,394 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:17,500 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:17,501 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:17,606 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: poll_exit
+2021-05-27 14:57:17,607 DEBUG   SenderThread:4503 [sender.py:send_request():186] send_request: poll_exit
+2021-05-27 14:57:17,608 INFO    SenderThread:4503 [file_pusher.py:join():181] waiting for file pusher
+2021-05-27 14:57:17,611 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: get_summary
+2021-05-27 14:57:17,613 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: sampled_history
+2021-05-27 14:57:17,614 DEBUG   HandlerThread:4503 [handler.py:handle_request():121] handle_request: shutdown
+2021-05-27 14:57:17,614 INFO    HandlerThread:4503 [handler.py:finish():632] shutting down handler
+2021-05-27 14:57:18,114 INFO    WriterThread:4503 [datastore.py:close():258] close: /Users/danielafrimi/Desktop/University/Lab_Vision/StyleTransferFTN/wandb/run-20210527_145545-m4op3ipf/run-m4op3ipf.wandb
+2021-05-27 14:57:18,613 INFO    SenderThread:4503 [sender.py:finish():925] shutting down sender
+2021-05-27 14:57:18,614 INFO    SenderThread:4503 [file_pusher.py:finish():176] shutting down file pusher
+2021-05-27 14:57:18,614 INFO    SenderThread:4503 [file_pusher.py:join():181] waiting for file pusher
+2021-05-27 14:57:18,617 INFO    MainThread:4503 [internal.py:handle_exit():78] Internal process exited

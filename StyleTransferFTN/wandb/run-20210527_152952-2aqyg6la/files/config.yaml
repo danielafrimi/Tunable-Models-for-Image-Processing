@@ -1,0 +1,73 @@
+wandb_version: 1
+
+CUDA:
+  desc: null
+  value: false
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.10.30
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.8.5
+    t:
+      1:
+      - 1
+      2:
+      - 1
+      3:
+      - 1
+      - 2
+      4: 3.8.5
+      5: 0.10.30
+      8:
+      - 5
+alpha:
+  desc: null
+  value: 1
+architecture:
+  desc: null
+  value: ImageTransfer
+batch_size:
+  desc: null
+  value: 4
+content_weight:
+  desc: null
+  value: 1.0
+dataset:
+  desc: null
+  value: COCO
+epochs:
+  desc: null
+  value: 2
+finetune:
+  desc: null
+  value: false
+image_size:
+  desc: null
+  value: 256
+learning_rate:
+  desc: null
+  value: 0.001
+load:
+  desc: null
+  value: true
+path_dataset:
+  desc: null
+  value: ''
+path_style_image:
+  desc: null
+  value: ''
+path_style_image_finetune:
+  desc: null
+  value: ''
+style_weight:
+  desc: null
+  value: 100000.0
+tv_weight:
+  desc: null
+  value: 1.0e-07
+visualize:
+  desc: null
+  value: true
