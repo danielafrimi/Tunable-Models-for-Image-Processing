@@ -6,7 +6,7 @@ from piq import psnr
 from torchvision.utils import make_grid, save_image
 from tqdm import tqdm
 
-from Utils import freeze_network_weights
+from utils_ftn import freeze_network_weights
 
 
 class Trainer:

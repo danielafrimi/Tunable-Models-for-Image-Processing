@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision import transforms
 from torchvision.utils import make_grid
+from utils_ftn import freeze_network_weights
 
 import utils
 import wandb
@@ -17,15 +18,6 @@ from network_ftn import ImageTransformNet
 from vgg import Vgg16
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
-
-# Global Variables
-IMAGE_SIZE = 256
-BATCH_SIZE = 4
-LEARNING_RATE = 1e-3
-EPOCHS = 2
-STYLE_WEIGHT = 1e5
-CONTENT_WEIGHT = 1e0
-TV_WEIGHT = 1e-7
 
 
 def train(args, hyperparameters):
@@ -44,25 +36,16 @@ def train(args, hyperparameters):
                 utils.normalize_tensor_transform()  # normalize with ImageNet values
             ])
 
-            # testImage_amber = utils.load_image("content_imgs/amber.jpg")
-            # testImage_amber = img_transform_512(testImage_amber)
-            # testImage_amber = testImage_amber.repeat(1, 1, 1, 1).detach().cpu() if not config.CUDA \
-            #     else testImage_amber.repeat(1, 1, 1, 1).to(device)
-
             testImage_dan = utils.load_image("content_imgs/dan.jpg")
             testImage_dan = img_transform_512(testImage_dan)
             testImage_dan = testImage_dan.repeat(1, 1, 1, 1).detach().cpu()
 
-            # testImage_maine = utils.load_image("content_imgs/maine.jpg")
-            # testImage_maine = img_transform_512(testImage_maine)
-            # testImage_maine = testImage_maine.repeat(1, 1, 1, 1) if not config.CUDA \
-            #     else testImage_maine.repeat(1, 1, 1, 1).to(device)
-
         # define network
-        image_transformer = ImageTransformNet()
+        image_transformer = ImageTransformNet(alpha=config.alpha)
+
         image_transformer if not config.CUDA else image_transformer.to(device)
 
-        optimizer = Adam(image_transformer.parameters(), LEARNING_RATE)
+        optimizer = Adam(image_transformer.parameters(), config.learning_rate)
 
         loss_mse = torch.nn.MSELoss()
 
@@ -72,8 +55,8 @@ def train(args, hyperparameters):
 
         # get training dataset
         dataset_transform = transforms.Compose([
-            transforms.Resize(IMAGE_SIZE),  # scale shortest side to image_size
-            transforms.CenterCrop(IMAGE_SIZE),  # crop center image_size out
+            transforms.Resize(config.image_size),  # scale shortest side to image_size
+            transforms.CenterCrop(config.image_size),  # crop center image_size out
             transforms.ToTensor(),  # turn image from [0-255] to [0-1]
             utils.normalize_tensor_transform()  # normalize with ImageNet values
         ])
@@ -92,6 +75,17 @@ def train(args, hyperparameters):
         style = style.repeat(config.batch_size, 1, 1, 1) if not config.CUDA else style.repeat(config.batch_size, 1, 1,
                                                                                               1).to(device)
         style_name = os.path.split(args.style_image)[-1].split('.')[0]
+        print("Using {} Style".format(style_name))
+
+        # todo add optimizers for ftn layer ? check if it works without it
+        if config.load:
+            filename = "models/{}_{}_ftn_layers".format("mosaic", 3)
+            print("Loading Weights")
+            image_transformer.load(filename)
+
+            # Freeze all the weights except the FTN layers
+            print("Freezing Weights")
+            freeze_network_weights(image_transformer)
 
         # calculate gram matrices for style feature layer maps we care about
         style_features = vgg(style)
@@ -100,7 +94,8 @@ def train(args, hyperparameters):
         wandb.watch(image_transformer, loss_mse, log="all", log_freq=5)
 
         iter_number = 0
-        for e in range(EPOCHS):
+        print("Strat Training")
+        for epoch in range(config.epochs):
 
             # track values for...
             img_count = 0
@@ -133,21 +128,21 @@ def train(args, hyperparameters):
                 style_loss = 0.0
                 for j in range(4):
                     style_loss += loss_mse(y_hat_gram[j], style_gram[j][:img_batch_read])
-                style_loss = STYLE_WEIGHT * style_loss
+                style_loss = config.style_weight * style_loss
                 aggregate_style_loss += style_loss.item()
 
                 # calculate content loss (h_relu_2_2)
                 recon = y_c_features[1]
                 recon_hat = y_hat_features[1]
 
-                content_loss = CONTENT_WEIGHT * loss_mse(recon_hat, recon)
+                content_loss = config.content_weight * loss_mse(recon_hat, recon)
                 aggregate_content_loss += content_loss.item()
 
                 # calculate total variation regularization (anisotropic version)
                 # https://www.wikiwand.com/en/Total_variation_denoising
                 diff_i = torch.sum(torch.abs(y_hat[:, :, :, 1:] - y_hat[:, :, :, :-1]))
                 diff_j = torch.sum(torch.abs(y_hat[:, :, 1:, :] - y_hat[:, :, :-1, :]))
-                tv_loss = TV_WEIGHT * (diff_i + diff_j)
+                tv_loss = config.tv_weight * (diff_i + diff_j)
                 aggregate_tv_loss += tv_loss.item()
 
                 # total loss
@@ -161,7 +156,7 @@ def train(args, hyperparameters):
                 if (batch_num + 1) % 10 == 0:
                     status = "{}  Epoch {}:  [{}/{}]  Batch:[{}]  agg_style: {:.6f}  agg_content: {:.6f}  agg_tv: {:.6f}  " \
                              "style: {:.6f}  content: {:.6f}  tv: {:.6f} ".format(
-                        time.ctime(), e + 1, img_count, len(train_dataset), batch_num + 1,
+                        time.ctime(), epoch + 1, img_count, len(train_dataset), batch_num + 1,
                                       aggregate_style_loss / (batch_num + 1.0),
                                       aggregate_content_loss / (batch_num + 1.0),
                                       aggregate_tv_loss / (batch_num + 1.0),
@@ -185,39 +180,25 @@ def train(args, hyperparameters):
                     if not os.path.exists("visualization/%s" % style_name):
                         os.makedirs("visualization/%s" % style_name)
 
-                    # outputTestImage_amber = image_transformer(testImage_amber.to(device)).detach().cpu()
-                    # amber_path = "visualization/%s/amber_%d_%05d.jpg" % (style_name, e + 1, batch_num + 1)
-                    # utils.save_image(amber_path, outputTestImage_amber.data[0])
-
+                    # todo testImage_dan.to(device)
                     outputTestImage_dan = image_transformer(testImage_dan.to(device)).detach().cpu()
-                    dan_path = "visualization/%s/dan_%d_%05d.jpg" % (style_name, e + 1, batch_num + 1)
+                    dan_path = "visualization/%s/dan_%d_%05d.jpg" % (style_name, epoch + 1, batch_num + 1)
                     utils.save_image(dan_path, outputTestImage_dan.data[0])
-
-                    # outputTestImage_maine = image_transformer(testImage_maine.to(device)).detach().cpu()
-                    # maine_path = "visualization/%s/maine_%d_%05d.jpg" % (style_name, e + 1, batch_num + 1)
-                    # utils.save_image(maine_path, outputTestImage_maine.data[0])
-
-                    # wandb.log({"amber": [wandb.Image(make_grid(outputTestImage_amber),
-                    #                                  caption="Style-amber")],
-                    #            "dan": [wandb.Image(make_grid(outputTestImage_dan),
-                    #                                caption="Style-dan")],
-                    #            "maine": [wandb.Image(make_grid(outputTestImage_maine),
-                    #                                  caption="Style-maine")],
-                    #            })
 
                     wandb.log({"dan": [wandb.Image(make_grid(outputTestImage_dan),
                                                    caption="Style-dan")],
                                })
 
-                    print("images saved")
                     image_transformer.train()
 
-                if (batch_num + 1) % 30 == 0:
+                if (batch_num + 1) % 100 == 0:
                     # Save the Model
                     if not os.path.exists("models"):
                         os.makedirs("models")
-                    filename = "models/" + str(style_name) + "_" + str(time.ctime()).replace(' ', '_') + ".model"
-                    torch.save(image_transformer.state_dict(), filename)
+
+                    filename = "models/{}_{}_ftn_layers".format(str(style_name), config.ftn_layers)
+                    image_transformer.save(filename)
+                    print("Saved Weights")
 
         # save model
         image_transformer.eval()
@@ -225,38 +206,9 @@ def train(args, hyperparameters):
         # Save the Model
         if not os.path.exists("models"):
             os.makedirs("models")
-        filename = "models/" + str(style_name) + "_" + str(time.ctime()).replace(' ', '_') + ".model"
+
+        filename = "models/{}_{}_ftn_layers".format(str(style_name), config.ftn_layers)
         torch.save(image_transformer.state_dict(), filename)
-
-
-def style_transfer(args):
-    # GPU enabling
-    if (args.gpu != None):
-        use_cuda = True
-        dtype = torch.cuda.FloatTensor
-        torch.cuda.set_device(args.gpu)
-        print("Current device: %d" % torch.cuda.current_device())
-
-    # content image
-    img_transform_512 = transforms.Compose([
-        transforms.Resize(512),  # scale shortest side to image_size
-        transforms.CenterCrop(512),  # crop center image_size out
-        transforms.ToTensor(),  # turn image from [0-255] to [0-1]
-        utils.normalize_tensor_transform()  # normalize with ImageNet values
-    ])
-
-    content = utils.load_image(args.source)
-    content = img_transform_512(content)
-    content = content.unsqueeze(0)
-    content = Variable(content).type(dtype)
-
-    # load style model
-    style_model = ImageTransformNet().type(dtype)
-    style_model.load_state_dict(torch.load(args.model_path))
-
-    # process input image
-    stylized = style_model(content).cpu()
-    utils.save_image(args.output, stylized.data[0])
 
 
 def main():
@@ -264,15 +216,22 @@ def main():
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
     train_parser = subparsers.add_parser("train", help="train a model to do style transfer")
+
     train_parser.add_argument("--style-image", type=str, default='/cs/labs/werman/daniel023/Lab_vision/StyleTransfer'
                                                                  '/style_imgs/rain_princess.jpeg',
                               help="path to a style image to train with")
 
+    train_parser.add_argument("--dataset", type=str, default='/cs/labs/werman/daniel023/Lab_vision/StyleTransfer/coco'
+                              , help="path to a dataset")
+
+    # train_parser.add_argument("--style-image", type=str, default='/Users/danielafrimi/Desktop/University/Lab_Vision'
+    #                                                              '/StyleTransferFTN/style_imgs/rain_princess.jpeg',
+    #                           help="path to a style image to train with")
+    #
+    #
     # train_parser.add_argument("--dataset", type=str, default='/Users/danielafrimi/Desktop/University/Lab_Vision'
     #                                                          '/StyleTransfer/coco', help="path to a dataset")
     #
-    train_parser.add_argument("--dataset", type=str, default='/cs/labs/werman/daniel023/Lab_vision/StyleTransfer/coco'
-                              , help="path to a dataset")
 
     train_parser.add_argument("--gpu", type=int, default=None, help="ID of GPU to be used")
 
@@ -288,9 +247,6 @@ def main():
     if args.subcommand == "train":
         print("Training!")
         train(args, config)
-    elif args.subcommand == "transfer":
-        print("Style transfering!")
-        style_transfer(args)
     else:
         print("invalid command")
 
@@ -298,6 +254,8 @@ def main():
 config = dict(
     epochs=2,
     batch_size=4,
+    alpha=0,
+    ftn_layers=0,
     learning_rate=1e-3,
     dataset="COCO",
     style_weight=1e5,
@@ -308,7 +266,18 @@ config = dict(
     load=False,
     CUDA=True,
     path_dataset='',
+    path_style_image='',
+    path_style_image_finetune='',
     architecture="ImageTransfer")
 
 if __name__ == '__main__':
     main()
+
+# TODO Move to first step ->
+#  1. change alpha to zero
+#  2.change the images path
+
+# TODO second step ->
+#  1. take another image style path
+#  2.change alpha to 1
+#  3. load=True + freeze weghts

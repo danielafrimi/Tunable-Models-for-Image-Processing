@@ -23,25 +23,29 @@ class Kernels(nn.Module):
 
 # Conv Layer
 class ConvLayer(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size, stride, ftn_layer=None):
+    def __init__(self, in_channels, out_channels, kernel_size, stride, alpha=0, groups=1, use_ftn=False):
         super(ConvLayer, self).__init__()
         padding = kernel_size // 2
-        self.ftn_layer = ftn_layer
         self.reflection_pad = nn.ReflectionPad2d(padding)
-        # self.conv2d = nn.Conv2d(in_channels, out_channels, kernel_size, stride)
+        # todo delete this?
+        conv2d = nn.Conv2d(in_channels, out_channels, kernel_size, stride)
         self.stride = stride
-        self.kernel = Kernels(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, stride=stride)
+        self.kernel_parameters = Parameter(conv2d.weight)
+        self.kernel_bias = Parameter(conv2d.bias)
+        self.ftn_layer = FTNBlock(alpha=alpha, in_nc=in_channels, out_nc=out_channels, groups=groups)
+        # self.kernel = Kernels(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, stride=stride)
+        self.use_ftn = use_ftn
 
     def forward(self, x):
         out = self.reflection_pad(x)
-        if self.ftn_layer is None:
-            out = functional.conv2d(out, self.kernel.kernel_parameters, bias=self.kernel.kernel_bias, stride=self.stride)
+        if not self.use_ftn:
+            out = functional.conv2d(out, self.kernel_parameters, bias=self.kernel_bias, stride=self.stride)
         else:
-            conv_weights = self.ftn_layer(self.kernel.kernel_parameters)
+            conv_weights = self.ftn_layer(self.kernel_parameters)
             out = functional.conv2d(out, conv_weights, stride=self.stride)
 
         # out = self.conv2d(out)
-        # print("this is out: ", out.shape)
+
         return out
 
 
@@ -103,21 +107,14 @@ class ImageTransformNet(nn.Module):
         self.tanh = nn.Tanh()
 
         # encoding layers
-        ftn_layer1 = FTNBlock(alpha=alpha, in_nc=3, out_nc=32, groups=1) # todo change the groups
-        self.conv1 = ConvLayer(3, 32, kernel_size=9, stride=1, ftn_layer=ftn_layer1)
-        # FTN layer
-        # self.kernels.append(Kernels(in_channels=3, out_channels=32, kernel_size=9, stride=1))
-        # self.ftn_layers.append(FTNBlock(alpha=alpha, in_nc=3, out_nc=32, groups=1))
+        # ftn_layer1 = FTNBlock(alpha=alpha, in_nc=3, out_nc=32, groups=1) # todo change the groups
+        self.conv1 = ConvLayer(3, 32, kernel_size=9, stride=1, alpha=0, use_ftn=True)
         self.in1_e = nn.InstanceNorm2d(32, affine=True)
 
-        ftn_layer2 = FTNBlock(alpha=alpha, in_nc=32, out_nc=64, groups=16)
-        self.conv2 = ConvLayer(32, 64, kernel_size=3, stride=2, ftn_layer=ftn_layer2)
-        # FTN layer
-        # self.kernels.append(Kernels(in_channels=32, out_channels=64, kernel_size=3, stride=2))
-        # self.ftn_layers.append(FTNBlock(alpha=alpha, in_nc=32, out_nc=64, groups=16))
+        self.conv2 = ConvLayer(32, 64, kernel_size=3, stride=2, alpha=0, groups=16, use_ftn=True)
         self.in2_e = nn.InstanceNorm2d(64, affine=True)
 
-        self.conv3 = ConvLayer(64, 128, kernel_size=3, stride=2)
+        self.conv3 = ConvLayer(64, 128, kernel_size=3, stride=2, alpha=0, groups=16, use_ftn=True)
         self.in3_e = nn.InstanceNorm2d(128, affine=True)
 
         # residual layers
@@ -136,9 +133,6 @@ class ImageTransformNet(nn.Module):
 
         self.deconv1 = UpsampleConvLayer(32, 3, kernel_size=9, stride=1)
         self.in1_d = nn.InstanceNorm2d(3, affine=True)
-
-        for ftn in self.ftn_layers:
-            ftn.init_weights()
 
     def forward(self, x):
         # encode

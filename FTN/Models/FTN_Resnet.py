@@ -16,10 +16,8 @@ class Kernels(nn.Module):
         kernel.weight.data.normal_(0, (2 / (9.0 * 64)) ** 0.5)
 
         self.kernel_parameters = Parameter(kernel.weight)
-        # self.kernel_bias = torch.nn.init.xavier_uniform_(kernel.bias)
 
     def forward(self, ftn_layer):
-        # print(self.kernel_parameters)
         kernel_weights = ftn_layer(self.kernel_parameters)
         return kernel_weights
 

@@ -63,6 +63,8 @@ class FTNBlock(nn.Module):
         self.conv2_ftn = nn.Conv2d(out_nc, in_nc, kernel_size=(1, 1), groups=groups).requires_grad_(True)
         self.conv3_ftn = nn.Conv2d(in_nc, in_nc, kernel_size=(1, 1)).requires_grad_(True)
 
+        self.init_weights()
+
     def init_weights(self, identity=True):
 
         for m in self.modules():
