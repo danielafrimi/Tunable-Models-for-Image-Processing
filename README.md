@@ -203,7 +203,7 @@ In the image below it can be seen that the filters for different types of noise 
 ### Perceptual Losses for Real-Time Style Transfer and Super-Resolution
 
 - [paper](https://arxiv.org/pdf/1603.08155.pdf)
-- [code](todo)
+- [code](https://github.com/dxyang/StyleTransfer)
 
 In this paper they combined the benefits of a CNN for image transformation tasks (train in a supervised manner), 
 and the benefit of perceptual loss functions based not on differences between pixels but instead on differences between high-level image feature representations extracted
@@ -220,3 +220,27 @@ features from a pretrained loss network.
 <img src="readme_figures/filters_dni.jpeg" alt="DNI Filters" width="70%"/>
 </p>
 
+
+##Dynamic-Net: Tuning the Objective Without Re-training for Synthesis Tasks
+
+- [paper](https://arxiv.org/pdf/1811.08760.pdf)
+- [code](https://github.com/AlonShoshan10/dynamic_net)
+ 
+we cannot directly modify the objective at test-time. However, what we can do is modify the
+latent space representation. Therefore, their approach relies
+on manipulation of deep features in order to emulate a manipulation in objective space.
+
+The main advantages of the Dynamic-Net are three-fold.
+1.Using a single training session the Dynamic-Net can
+emulate networks trained with a variety of different objectives, for example, networks which produce stronger or
+weaker stylization effects
+
+2. The ability to traverse the objective space at test-time shrinks the search space during training
+
+3. it facilitates image-specific and user-specific adaptation, without re-training.
+
+<p align="center">
+    <img src="readme_figures/dynamic.png" height="200px">
+    <img src="readme_figures/dynamic1.png" height="200px">
+    <img src="readme_figures/dynamic1.png" height="200px">
+</p>

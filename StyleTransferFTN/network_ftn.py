@@ -42,12 +42,11 @@ class ConvLayer(nn.Module):
             out = functional.conv2d(out, self.kernel_parameters, bias=self.kernel_bias, stride=self.stride)
         else:
             conv_weights = self.ftn_layer(self.kernel_parameters)
-            out = functional.conv2d(out, conv_weights, stride=self.stride)
+            out = functional.conv2d(out, conv_weights, stride=self.stride, bias=self.kernel_bias)
 
         # out = self.conv2d(out)
 
         return out
-
 
 # Upsample Conv Layer
 class UpsampleConvLayer(nn.Module):
@@ -73,12 +72,12 @@ class UpsampleConvLayer(nn.Module):
 #   https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/02-
 #   intermediate/deep_residual_network/main.py
 class ResidualBlock(nn.Module):
-    def __init__(self, channels):
+    def __init__(self, channels, alpha, groups):
         super(ResidualBlock, self).__init__()
-        self.conv1 = ConvLayer(channels, channels, kernel_size=3, stride=1)
+        self.conv1 = ConvLayer(channels, channels, kernel_size=3, stride=1, alpha=alpha, groups=groups, use_ftn=True)
         self.in1 = nn.InstanceNorm2d(channels, affine=True)
         self.relu = nn.ReLU()
-        self.conv2 = ConvLayer(channels, channels, kernel_size=3, stride=1)
+        self.conv2 = ConvLayer(channels, channels, kernel_size=3, stride=1, use_ftn=True)
         self.in2 = nn.InstanceNorm2d(channels, affine=True)
 
         # todo create here the numbers of kernels and hold it as parameters_list
@@ -108,21 +107,21 @@ class ImageTransformNet(nn.Module):
 
         # encoding layers
         # ftn_layer1 = FTNBlock(alpha=alpha, in_nc=3, out_nc=32, groups=1) # todo change the groups
-        self.conv1 = ConvLayer(3, 32, kernel_size=9, stride=1, alpha=0, use_ftn=True)
+        self.conv1 = ConvLayer(3, 32, kernel_size=9, stride=1, alpha=alpha, use_ftn=True)
         self.in1_e = nn.InstanceNorm2d(32, affine=True)
 
-        self.conv2 = ConvLayer(32, 64, kernel_size=3, stride=2, alpha=0, groups=16, use_ftn=True)
+        self.conv2 = ConvLayer(32, 64, kernel_size=3, stride=2, alpha=alpha, groups=16, use_ftn=True)
         self.in2_e = nn.InstanceNorm2d(64, affine=True)
 
-        self.conv3 = ConvLayer(64, 128, kernel_size=3, stride=2, alpha=0, groups=16, use_ftn=True)
+        self.conv3 = ConvLayer(64, 128, kernel_size=3, stride=2, alpha=alpha, groups=16, use_ftn=True)
         self.in3_e = nn.InstanceNorm2d(128, affine=True)
 
         # residual layers
-        self.res1 = ResidualBlock(128)
-        self.res2 = ResidualBlock(128)
-        self.res3 = ResidualBlock(128)
-        self.res4 = ResidualBlock(128)
-        self.res5 = ResidualBlock(128)
+        self.res1 = ResidualBlock(128, alpha=alpha, groups=32)
+        self.res2 = ResidualBlock(128, alpha=alpha, groups=32)
+        self.res3 = ResidualBlock(128, alpha=alpha, groups=32)
+        self.res4 = ResidualBlock(128, alpha=alpha, groups=32)
+        self.res5 = ResidualBlock(128, alpha=alpha, groups=32)
 
         # decoding layers
         self.deconv3 = UpsampleConvLayer(128, 64, kernel_size=3, stride=1, upsample=2)
@@ -135,19 +134,10 @@ class ImageTransformNet(nn.Module):
         self.in1_d = nn.InstanceNorm2d(3, affine=True)
 
     def forward(self, x):
-        # encode
 
+        # encode
         y = self.relu(self.in1_e(self.conv1(x)))
         y = self.relu(self.in2_e(self.conv2(y)))
-        # print(self.kernels[0].kernel_parameters.shape)
-        # conv1_weights = self.ftn_layers[0](self.kernels[0].kernel_parameters)
-        # y = self.relu(self.in1_e(functional.conv2d(x, conv1_weights)))
-        # print("this is y shape", y.shape)
-
-        # print(self.kernels[1].kernel_parameters.shape)
-        # conv2_weights = self.ftn_layers[1](self.kernels[1].kernel_parameters)
-        # y = self.relu(self.in2_e(functional.conv2d(y, conv2_weights)))
-
         y = self.relu(self.in3_e(self.conv3(y)))
 
         # residual layers

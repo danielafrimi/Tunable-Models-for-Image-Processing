@@ -3,18 +3,16 @@ import os
 import time
 
 import torch
-from torch.autograd import Variable
+import wandb
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision import transforms
 from torchvision.utils import make_grid
-from utils_ftn import freeze_network_weights
 
 import utils
-import wandb
-# from network import ImageTransformNet
 from network_ftn import ImageTransformNet
+from utils_ftn import freeze_network_weights
 from vgg import Vgg16
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
@@ -79,7 +77,7 @@ def train(args, hyperparameters):
 
         # todo add optimizers for ftn layer ? check if it works without it
         if config.load:
-            filename = "models/{}_{}_ftn_layers".format("mosaic", 3)
+            filename = "models/{}_{}_ftn_layers_finetune_{}".format('feathers', config.ftn_layers, False)
             print("Loading Weights")
             image_transformer.load(filename)
 
@@ -153,7 +151,7 @@ def train(args, hyperparameters):
                 optimizer.step()
 
                 # print out status message
-                if (batch_num + 1) % 10 == 0:
+                if (batch_num + 1) % 50 == 0:
                     status = "{}  Epoch {}:  [{}/{}]  Batch:[{}]  agg_style: {:.6f}  agg_content: {:.6f}  agg_tv: {:.6f}  " \
                              "style: {:.6f}  content: {:.6f}  tv: {:.6f} ".format(
                         time.ctime(), epoch + 1, img_count, len(train_dataset), batch_num + 1,
@@ -172,7 +170,7 @@ def train(args, hyperparameters):
                                "tv": tv_loss.item()
                                }, step=iter_number)
 
-                if (batch_num + 1) % 30 == 0 and config.visualize:
+                if (batch_num + 1) % 100 == 0 and config.visualize:
                     image_transformer.eval()
 
                     if not os.path.exists("visualization"):
@@ -191,12 +189,12 @@ def train(args, hyperparameters):
 
                     image_transformer.train()
 
-                if (batch_num + 1) % 100 == 0:
+                if (batch_num + 1) % 400 == 0:
                     # Save the Model
                     if not os.path.exists("models"):
                         os.makedirs("models")
 
-                    filename = "models/{}_{}_ftn_layers".format(str(style_name), config.ftn_layers)
+                    filename = "models/{}_{}_ftn_layers_finetune_{}".format(str(style_name), config.ftn_layers, config.finetune)
                     image_transformer.save(filename)
                     print("Saved Weights")
 
@@ -207,7 +205,7 @@ def train(args, hyperparameters):
         if not os.path.exists("models"):
             os.makedirs("models")
 
-        filename = "models/{}_{}_ftn_layers".format(str(style_name), config.ftn_layers)
+        filename = "models/{}_{}_ftn_layers_finetune_{}".format(str(style_name), config.ftn_layers, config.finetune)
         torch.save(image_transformer.state_dict(), filename)
 
 
@@ -218,7 +216,7 @@ def main():
     train_parser = subparsers.add_parser("train", help="train a model to do style transfer")
 
     train_parser.add_argument("--style-image", type=str, default='/cs/labs/werman/daniel023/Lab_vision/StyleTransfer'
-                                                                 '/style_imgs/rain_princess.jpeg',
+                                                                 '/style_imgs/mosaic.jpg',
                               help="path to a style image to train with")
 
     train_parser.add_argument("--dataset", type=str, default='/cs/labs/werman/daniel023/Lab_vision/StyleTransfer/coco'
@@ -254,8 +252,8 @@ def main():
 config = dict(
     epochs=2,
     batch_size=4,
-    alpha=0,
-    ftn_layers=0,
+    alpha=1,
+    ftn_layers=10,
     learning_rate=1e-3,
     dataset="COCO",
     style_weight=1e5,
@@ -263,12 +261,13 @@ config = dict(
     tv_weight=1e-7,
     image_size=256,
     visualize=True,
-    load=False,
+    load=True,
     CUDA=True,
+    finetune=True,
     path_dataset='',
-    path_style_image='',
-    path_style_image_finetune='',
-    architecture="ImageTransfer")
+    style_image='feathers',
+    style_image_finetune='mosaic',
+    architecture="ImageTransferFTN")
 
 if __name__ == '__main__':
     main()
@@ -276,8 +275,11 @@ if __name__ == '__main__':
 # TODO Move to first step ->
 #  1. change alpha to zero
 #  2.change the images path
+#  3. change the ftn_layer to another number
+#  4. change finetune to False
 
 # TODO second step ->
 #  1. take another image style path
 #  2.change alpha to 1
 #  3. load=True + freeze weghts
+#  4. change finetune to True

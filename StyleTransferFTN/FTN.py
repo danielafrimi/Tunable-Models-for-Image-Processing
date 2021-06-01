@@ -87,7 +87,7 @@ class FTNBlock(nn.Module):
         # FTN Layer
         x = self.conv1_ftn(x)
         x = self.pReLu(x)
-        x = self.conv2_ftn(x) + input_filter
+        x = self.conv2_ftn(x)
 
         y = self.conv3_ftn(x)
 
