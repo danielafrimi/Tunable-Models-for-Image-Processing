@@ -1,13 +1,28 @@
 # Lab
 
+## Introduction
+
+Deep convolutions neural network has demonstrated its capability of learning a deterministic mapping for the desired imagery effect. However, the large variety of user flavors motivates the possibility of continuous transition among different output effects. \\
+
+For example if our task is image denoisng, the most common method is by supervised models (deep learning), when the input is a noisy image, and the output will be the clean image (fixed pre-determined corruption level). However, models are optimized for only a single degradation level, so if we have a batch of noisy images with different Gaussian noise, our model will not clean the images well (in reality, the degradation level is not known and at inference time, the model can under-perform). \\ 
+
+In order to overcome this limitation, continuous-level based models have been proposed. in such models, the output image is based on a target parameter which can be adjusted at inference time. 
+
+## Implement Smoother Network Tuning and Interpolation for Continuous-level Image Processing paper
+To get a better intuition about Continuous-level models, I implemented \href{https://arxiv.org/abs/1904.08118} {Modulating Image Restoration with Continual Levels via Adaptive Feature Modification Layers (CVPR 2019)} and \href{https://arxiv.org/abs/1811.10515}{DNI - Deep Network Interpolation for Continuous Imagery Effect Transition (CVPR 2018)}  
+
+I have implemented the FTN paper by Samsung Research (2020, with no code reference. The proposed architecture learns kernels during training (taken from the idea in a hyper networks paper).
+
+In the paper they proposed a smoother network tuning and interpolation method for Continuous-level using the FTN, which is structurally smoother than the other frameworks. In addition, the method is comparable in adaptation and interpolation performance on multiple imaging levels, significantly
+smoother in practice, and efficient in both memory and computational complexity. 
+
+Filter Transition Network (FTN) which is a non-linear module that easily adapts to new levels (and a method to initialize non- linear CNNs with identity mappings).
+
+### FTN- Densioing Task
  
 
-## 1st Step
- Train a renset model (with 5-10 layers) on denoising task.
-added a Gaussian noise with std equal to 0.2 to each image. 
-I've added the ftn layer after each filter, In the first training alpha=0 (we dont learn the ftn blocks beacuse the gradient is 0).
-the results were the same to the basic model (PSNR 27-28).
-
+Train a renset model (with 5-10 layers) on denoising task. added a Gaussian noise with std equal to 0.2 to each image. I've added the FTN blocks after each filter, In the first training alpha=0 (we don't learn the FTN blocks because the gradient is 0). the results were the same to the basic model (PSNR 27-28). 
+It can be seen that with the architecture of the model on 16 layers, the model tries to clear a noise of 0.2, but does not maintain the sharpness of the original images.
 
 
 [comment]: <> (<p float="left">)
@@ -119,27 +134,17 @@ Results during Finetune the model on 0.5 std noise:
 </p>
 
 
-###Notes:
-- I think the model's architecture (resnet with blocks that contain filter, BN and relu) is not good enough, regardless of the number of layers of the model (I tried several layers and the difference is very negligible), it fails to bring good enough results in finetune. 
-  I have read about a number of articles and may have tried to implement the DcNN model but I am not sure it will meet the conditions.
-
-1. training first step on 0.1 std and finetuning the model on 0.5 std didnt work well. tha loss at start decreased.
-
-
-### Interpolation
-
-in wandb - to add it
 
 
 
+### FTN- StyleTransfer Task
+Because the noise cleaning model did not work adequately, it was difficult to see whether during interpolation in the model's parameters space, it clears noise with unlearned noise (level between the start level and the end one). Therefore, we chose to test the model on the style task (adding style to the image) - will allow us a clearer distinction.\\
+At first I implemented the paper "Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization", and tested it without adding the FTN blocks. 
 
-
-## Introduction
-Deep convolutions neural network has demonstrated its capability of learning a deterministic mapping for the desired imagery effect. However, the large variety of user flavors motivates the possibility of continuous transition among different output effects.
-
-For example if our task is image denoisng, the most common method is by supervised models (deep learning), when the input is a noisy image, and the output will be the clean image (fixed pre-determined corruption level). However, models are optimized for only a single degradation level, so if we have a batch of noisy images with different Gaussian noise, our model will not clean the images well (in reality, the degradation level is not known and at inference time, the model can under-perform). 
-
-In order to overcome this limitation, continuous-level based models have been proposed. in such models, the output image is based on a target parameter which can be adjusted at inference time.
+ <p align="center">
+  <img src="images/bp_dgl_ssl_test_acc.svg" alt="first step feathers style" width="45%"/>
+  <img src="images/bp_dgl_ssl_test_loss.svg" alt="second step mosaic style" width="45%"/>
+  </p>
 
 # Related Work
 
@@ -221,7 +226,7 @@ features from a pretrained loss network.
 </p>
 
 
-##Dynamic-Net: Tuning the Objective Without Re-training for Synthesis Tasks
+## Dynamic-Net: Tuning the Objective Without Re-training for Synthesis Tasks
 
 - [paper](https://arxiv.org/pdf/1811.08760.pdf)
 - [code](https://github.com/AlonShoshan10/dynamic_net)
