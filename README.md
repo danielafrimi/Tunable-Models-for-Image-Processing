@@ -9,7 +9,7 @@ For example if our task is image denoisng, the most common method is by supervis
 In order to overcome this limitation, continuous-level based models have been proposed. in such models, the output image is based on a target parameter which can be adjusted at inference time. 
 
 ## Implement Smoother Network Tuning and Interpolation for Continuous-level Image Processing paper
-To get a better intuition about Continuous-level models, I implemented \href{https://arxiv.org/abs/1904.08118} {Modulating Image Restoration with Continual Levels via Adaptive Feature Modification Layers (CVPR 2019)} and \href{https://arxiv.org/abs/1811.10515}{DNI - Deep Network Interpolation for Continuous Imagery Effect Transition (CVPR 2018)}  
+To get a better intuition about Continuous-level models, I implemented https://arxiv.org/abs/1904.08118 - Modulating Image Restoration with Continual Levels via Adaptive Feature Modification Layers (CVPR 2019), and https://arxiv.org/abs/1811.10515 - DNI - Deep Network Interpolation for Continuous Imagery Effect Transition (CVPR 2018)
 
 I have implemented the FTN paper by Samsung Research (2020, with no code reference. The proposed architecture learns kernels during training (taken from the idea in a hyper networks paper).
 
@@ -142,8 +142,8 @@ Because the noise cleaning model did not work adequately, it was difficult to se
 At first I implemented the paper "Arbitrary Style Transfer in Real-time with Adaptive Instance Normalization", and tested it without adding the FTN blocks. 
 
  <p align="center">
-  <img src="images/bp_dgl_ssl_test_acc.svg" alt="first step feathers style" width="45%"/>
-  <img src="images/bp_dgl_ssl_test_loss.svg" alt="second step mosaic style" width="45%"/>
+  <img src="readme_figures/feathers_dan_first_step.png" alt="first step feathers style" width="45%"/>
+  <img src="readme_figures/dan_second_mosaic_.png" alt="second step mosaic style" width="45%"/>
   </p>
 
 # Related Work
