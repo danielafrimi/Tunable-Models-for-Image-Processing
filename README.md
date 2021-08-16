@@ -1,4 +1,4 @@
-# Lab
+# Lab - Tunable Models for Image Processing
 
 ## Introduction
 
